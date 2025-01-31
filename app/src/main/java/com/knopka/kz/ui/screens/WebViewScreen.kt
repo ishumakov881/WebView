@@ -57,7 +57,29 @@ private fun configureWebView(webView: WebView) {
         }
 
         // User Agent
-        userAgentString = userAgentString.replace("; wv)", ")")
+        //Mozilla/5.0 (Linux; Android 9; SM-G9880 Build/PQ3B.190801.10101846; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.82 Mobile Safari/537.36
+        //"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0"//
+
+
+        val originalUA = userAgentString
+        userAgentString = fixUserAgent(originalUA).replace("; wv)", ")")
+        println("Original UA: $originalUA")
+        println("   Fixed UA: ${userAgentString}")
+
+    }
+}
+
+
+private fun fixUserAgent(userAgent: String): String {
+    // Находим версию Android
+    val regex = "Android\\s+([0-9.]+)".toRegex()
+    val version = regex.find(userAgent)?.groupValues?.get(1)?.toFloatOrNull() ?: 9.0f
+
+    // Если версия меньше 9, подменяем на 9
+    return if (version < 9) {
+        userAgent.replace(regex, "Android 9")
+    } else {
+        userAgent
     }
 }
 
@@ -93,7 +115,7 @@ fun WebViewScreen(url: String) {
                         // Получаем WebView из кэша
                         val cachedWebView = WebViewCache.get(url, context, onLoadingChange = { loading ->
                             isLoading = loading
-                            isRefreshing = loading
+                            isRefreshing = false//loading
                         }).also { webView = it }
 
                         // Проверяем, есть ли у WebView родитель
@@ -144,8 +166,20 @@ object WebViewCache {
             }
         }.also { webView ->
             webView.webViewClient = object : WebViewClient() {
+
+                private var loadingStartTime = 0L
+
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+                    // Хак: если прошло больше 1 секунды - скрываем прогресс
+                    if (System.currentTimeMillis() - loadingStartTime > 1000) {
+                        onLoadingChange(false)
+                    }
+                }
+
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
+                    loadingStartTime = System.currentTimeMillis()
                     onLoadingChange(true)
                 }
 

@@ -27,14 +27,27 @@ android {
         }
     }
 
+
+    signingConfigs {
+        create("config") {
+            keyAlias = "brand57"
+            keyPassword = "brand57"
+            storeFile = file("keystore/brand57.jks")
+            storePassword = "brand57"
+        }
+    }
+
     buildTypes {
 
         getByName("debug"){
             applicationIdSuffix = ".debug"
+            signingConfig = signingConfigs.getByName("config")
         }
 
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("config")
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
