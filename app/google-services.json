@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "123456789",
+    "project_id": "crypto-miner-app",
+    "storage_bucket": "crypto-miner-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789:android:abcdef1234567890",
+        "android_client_info": {
+          "package_name": "com.knopka.kz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "your-api-key-here"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789:android:abcdef1234567890",
+        "android_client_info": {
+          "package_name": "com.knopka.kz.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "your-api-key-here"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ]
+} 
