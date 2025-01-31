@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
 
-        minSdk = 23
+        minSdk = 21
         targetSdk = 35
 //        versionCode = 1
 //        versionName = "1.0"
@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -57,5 +58,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    api("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    api(libs.accompanist.swiperefresh)
 }

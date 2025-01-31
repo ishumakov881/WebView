@@ -1,6 +1,5 @@
-package com.lds.wмrss.ui.theme
+package com.lds.wvrss.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

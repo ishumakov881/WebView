@@ -1,4 +1,4 @@
-package com.lds.wмrss.ui.theme
+package com.lds.wvrss.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

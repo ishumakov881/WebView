@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.knopka.kz"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -76,8 +76,8 @@ dependencies {
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
-    // SwipeRefresh
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    // SwipeRefreshLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
