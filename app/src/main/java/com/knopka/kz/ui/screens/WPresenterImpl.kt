@@ -343,8 +343,7 @@ class WPresenterImpl(
 //        a.setUserAgentString(agentStringNew);
 
 
-        val realFirefox =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"
+        val realFirefox = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0"
         a.userAgentString = realFirefox
     }
 

@@ -1,167 +1,146 @@
-package com.walhalla.landing.activity;
+package com.walhalla.landing.activity
 
-import static android.app.Activity.RESULT_OK;
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.os.Parcelable
+import android.provider.MediaStore
+import android.util.Log
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient.FileChooserParams
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.walhalla.landing.activity.DLog.d
+import com.walhalla.landing.activity.DLog.handleException
+import com.walhalla.webview.BuildConfig
+import com.walhalla.webview.MyWebChromeClient
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ClipData;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.webkit.URLUtil;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.widget.Toast;
+abstract class BaseWPresenter(protected val activity: AppCompatActivity) :
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+    WPresenter, MyWebChromeClient.Callback {
+    protected var mUploadMessage: ValueCallback<Uri?>? = null
+    protected var mUploadMessages: ValueCallback<Array<Uri>>? = null
+    private var mCapturedImageURI: Uri? = null
 
-
-import com.walhalla.webview.BuildConfig;
-import com.walhalla.webview.MyWebChromeClient;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-
-public abstract class BaseWPresenter implements WPresenter, MyWebChromeClient.Callback {
-
-    public static final int FILECHOOSER_RESULTCODE = 1;
-    protected final AppCompatActivity activity;
-
-    protected ValueCallback<Uri> mUploadMessage;
-    protected ValueCallback<Uri[]> mUploadMessages;
-    private Uri mCapturedImageURI = null;
-    public BaseWPresenter(AppCompatActivity compatActivity) {
-        this.activity = compatActivity;
-
-        DLog.d("@@@ CREATE @@@" + this.getClass().getSimpleName());
+    init {
+        d("@@@ CREATE @@@" + javaClass.simpleName)
     }
 
 
-
-
-    @Override
-    public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-        mUploadMessage = uploadMsg;
-        DLog.d("@mUploadMessage@" + mUploadMessage);
-        openImageChooser();
+    override fun openFileChooser(uploadMsg: ValueCallback<Uri?>?, acceptType: String?) {
+        mUploadMessage = uploadMsg
+        d("@mUploadMessage@$mUploadMessage")
+        openImageChooser()
     }
 
-    @Override
-    public void openFileChooser(ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
-        mUploadMessages = filePathCallback;
-        DLog.d("@mUploadMessages@" + mUploadMessages);
-        openImageChooser();
+    override fun openFileChooser(
+        filePathCallback: ValueCallback<Array<Uri>>?,
+        fileChooserParams: FileChooserParams?
+    ) {
+        mUploadMessages = filePathCallback
+        d("@mUploadMessages@$mUploadMessages")
+        openImageChooser()
     }
 
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         if (requestCode == FILECHOOSER_RESULTCODE) {
-            DLog.d("@_file_selected_@" + data + " " + mUploadMessage + " " + mUploadMessages);
+            d("@_file_selected_@$data $mUploadMessage $mUploadMessages")
             if (null == mUploadMessage && null == mUploadMessages) {
-                return;
+                return
             }
             if (null != mUploadMessage) {
-                handleUploadMessage(requestCode, resultCode, data);
+                handleUploadMessage(requestCode, resultCode, data)
             } else if (mUploadMessages != null) {
-                handleUploadMessages(resultCode, data);
+                handleUploadMessages(resultCode, data)
             }
         }
     }
 
-    /*-- creating new image file here --*/
-    public static File create_image(Context context) throws IOException {
-        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "img_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        return File.createTempFile(imageFileName, ".jpg", storageDir);
-    }
-
-//    public static final String KEYFILEPROVIDER = ".fileprovider";
-//
-//    @SuppressLint("ObsoleteSdkInt")
-//    public static Uri getUriFromFile(Context context, File file) throws IllegalArgumentException {
-//        String APPLICATION_ID = context.getPackageName();
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || file.isDirectory()) {//Not use FileProvider is Directory
-//            return Uri.fromFile(file);
-//        } else {
-//            return FileProvider.getUriForFile(context, APPLICATION_ID + KEYFILEPROVIDER, file);
-//        }
-//    }
-
-//    private Uri captureImageUri() {
-//        File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-//                "FolderName");
-//        if (!imageStorageDir.exists()) {
-//            boolean b = imageStorageDir.mkdirs();
-//        }
-//        File file = new File(imageStorageDir + File.separator + "IMG_" + System.currentTimeMillis() + ".jpg");
-//        Uri tmp = Uri.fromFile(file);
-//        DLog.d("[captureImageUri]" + tmp);
-//        return tmp;
-//    }
-
-    public void openImageChooser() {
+    //    public static final String KEYFILEPROVIDER = ".fileprovider";
+    //
+    //    @SuppressLint("ObsoleteSdkInt")
+    //    public static Uri getUriFromFile(Context context, File file) throws IllegalArgumentException {
+    //        String APPLICATION_ID = context.getPackageName();
+    //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || file.isDirectory()) {//Not use FileProvider is Directory
+    //            return Uri.fromFile(file);
+    //        } else {
+    //            return FileProvider.getUriForFile(context, APPLICATION_ID + KEYFILEPROVIDER, file);
+    //        }
+    //    }
+    //    private Uri captureImageUri() {
+    //        File imageStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+    //                "FolderName");
+    //        if (!imageStorageDir.exists()) {
+    //            boolean b = imageStorageDir.mkdirs();
+    //        }
+    //        File file = new File(imageStorageDir + File.separator + "IMG_" + System.currentTimeMillis() + ".jpg");
+    //        Uri tmp = Uri.fromFile(file);
+    //        DLog.d("[captureImageUri]" + tmp);
+    //        return tmp;
+    //    }
+    fun openImageChooser() {
         try {
             if (BuildConfig.DEBUG) {
-                Toast.makeText(activity, "@@@", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "@@@", Toast.LENGTH_SHORT).show()
             }
-            File photoFile = null;
+            var photoFile: File? = null
             try {
-                photoFile = create_image(activity);
-            } catch (IOException ex) {
-                Log.e("@@@", "photoFile file creation failed", ex);
+                photoFile = create_image(activity)
+            } catch (ex: IOException) {
+                Log.e("@@@", "photoFile file creation failed", ex)
             }
             //mCapturedImageURI = getUriFromFile(activity, photoFile);
-            mCapturedImageURI = Uri.fromFile(photoFile);
+            mCapturedImageURI = Uri.fromFile(photoFile)
 
-            final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
-            takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("image/*");
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI)
+            takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            val i = Intent(Intent.ACTION_GET_CONTENT)
+            i.addCategory(Intent.CATEGORY_OPENABLE)
+            i.setType("image/*")
             //i.setType("image/*");
-            i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{takePictureIntent});
-            activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
-        } catch (Exception e) {
-            DLog.handleException(e);
+            i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            val chooserIntent = Intent.createChooser(i, "Image Chooser")
+            chooserIntent.putExtra(
+                Intent.EXTRA_INITIAL_INTENTS,
+                arrayOf<Parcelable>(takePictureIntent)
+            )
+            activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE)
+        } catch (e: Exception) {
+            handleException(e)
         }
     }
 
     //api 35 content://media/picker_get_content/0/com.android.providers.media.photopicker/media/45
-
-    private void handleUploadMessages(final int resultCode, final Intent intent) {
-        DLog.d("----->>>>" + (resultCode == Activity.RESULT_CANCELED));
-        Uri[] results = null;
+    private fun handleUploadMessages(resultCode: Int, intent: Intent?) {
+        d("----->>>>" + (resultCode == Activity.RESULT_CANCELED))
+        var results: Array<Uri> = emptyArray()
         try {
             if (resultCode != Activity.RESULT_OK) {
-                results = null;
+                results = emptyArray()
 
 
-                if (/*resultCode == Activity.RESULT_OK &&*/
-                        mCapturedImageURI != null) {
-
-
+                if ( /*resultCode == Activity.RESULT_OK &&*/mCapturedImageURI != null) {
                     //file:/storage/emulated/0/Android/data/rudos.ru/cache/img_20240811_202938_4605351355341258236.jpg
 
 //                Uri[] results = new Uri[]{
 //                        Uri.fromFile(new File("/storage/emulated/0/Android/data/rudos.ru/cache/img_20240811_200744_5778639102896116151.jpg"))
 //                };
-                    results = new Uri[]{
-                            mCapturedImageURI
-                    };
-//            results = new Uri[]{
+
+                    if (mCapturedImageURI != null) {
+                        results = arrayOf(mCapturedImageURI!!)
+                    }
+
+
+                    //            results = new Uri[]{
 //                    UriUtils.getUriFromFile(this, new File("/storage/emulated/0/Pictures/img_20240811_194321_207750622564058918.jpg"))
 //            };
 
@@ -173,82 +152,97 @@ public abstract class BaseWPresenter implements WPresenter, MyWebChromeClient.Ca
 //                    Uri.fromFile(new File("/storage/emulated/0/Android/data/rudos.ru/cache/img_20240811_200744_5778639102896116151.jpg"))
 //            };
                     //content://com.android.providers.media.documents/document/image%3A3060  -- Work
-                    DLog.d("@www@" + Arrays.toString(results) + "@@" + mCapturedImageURI);
-
+                    d("@www@" + results.contentToString() + "@@" + mCapturedImageURI)
                 }
             } else {
                 if (intent != null) {
-                    String dataString = intent.getDataString();
-                    ClipData clipData = intent.getClipData();
+                    val dataString = intent.dataString
+                    val clipData = intent.clipData
                     if (clipData != null) {
-                        results = new Uri[clipData.getItemCount()];
-                        for (int i = 0; i < clipData.getItemCount(); i++) {
-                            ClipData.Item item = clipData.getItemAt(i);
-                            results[i] = item.getUri();
+                        results = emptyArray()
+                        for (i in 0 until clipData.itemCount) {
+                            val item = clipData.getItemAt(i)
+                            results[i] = item.uri
                         }
                     }
                     if (dataString != null) {
-                        results = new Uri[]{Uri.parse(dataString)};
+                        results = arrayOf(Uri.parse(dataString))
                     }
                 } else {
                     //ooo
-                    DLog.d("===================" + mCapturedImageURI);
-                    results = new Uri[]{mCapturedImageURI};
+                    d("===================$mCapturedImageURI")
+                    mCapturedImageURI?.let {
+                        results = arrayOf(it)
+                    }
                 }
             }
-        } catch (Exception e) {
-            DLog.handleException(e);
+        } catch (e: Exception) {
+            handleException(e)
         }
 
         //[content://com.android.providers.media.documents/document/image%3A3060,
         // content://com.android.providers.media.documents/document/image%3A3061]
-
-        DLog.d("@@" + Arrays.toString(results));
-        mUploadMessages.onReceiveValue(results);
-        mUploadMessages = null;
+        d("@@" + results.contentToString())
+        mUploadMessages!!.onReceiveValue(results)
+        mUploadMessages = null
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    private void handleUploadMessage(final int requestCode, final int resultCode, final Intent data) {
-        DLog.d("@@");
-        Uri result = null;
+    private fun handleUploadMessage(requestCode: Int, resultCode: Int, data: Intent?) {
+        d("@@")
+        var result: Uri? = null
         try {
-            if (resultCode != RESULT_OK) {
-                result = null;
+            result = if (resultCode != Activity.RESULT_OK) {
+                null
             } else {
                 // retrieve from the private variable if the intent is null
-                result = data == null ? mCapturedImageURI : data.getData();
+                if (data == null) mCapturedImageURI else data.data
             }
-        } catch (Exception e) {
-            DLog.handleException(e);
+        } catch (e: Exception) {
+            handleException(e)
         }
-        mUploadMessage.onReceiveValue(result);
-        mUploadMessage = null;
+        mUploadMessage!!.onReceiveValue(result)
+        mUploadMessage = null
 
         // code for all versions except of Lollipop
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-
-            result = null;
+            result = null
 
             try {
-                if (resultCode != RESULT_OK) {
-                    result = null;
+                if (resultCode != Activity.RESULT_OK) {
+                    result = null
                 } else {
                     // retrieve from the private variable if the intent is null
-                    result = data == null ? mCapturedImageURI : data.getData();
+                    result = if (data == null) mCapturedImageURI else data.data
 
                     //ooo
-                    DLog.d("===========@@========" + mCapturedImageURI);
+                    d("===========@@========$mCapturedImageURI")
                 }
-            } catch (Exception e) {
-                DLog.handleException(e);
-                Toast.makeText(activity, "activity :" + e, Toast.LENGTH_LONG).show();
+            } catch (e: Exception) {
+                handleException(e)
+                Toast.makeText(activity, "activity :$e", Toast.LENGTH_LONG).show()
             }
-            if (mUploadMessage != null) {
-                mUploadMessage.onReceiveValue(result);
-            }
-            mUploadMessage = null;
+            mUploadMessage?.onReceiveValue(result)
+            mUploadMessage = null
         }
+    }
 
-    } // end of code for all versions except of Lollipop
+    // end of code for all versions except of Lollipop
+
+    companion object {
+        const val FILECHOOSER_RESULTCODE: Int = 1
+
+        /*-- creating new image file here --*/
+        @Throws(IOException::class)
+        fun create_image(context: Context?): File {
+            @SuppressLint("SimpleDateFormat") val timeStamp =
+                SimpleDateFormat("yyyyMMdd_HHmmss").format(
+                    Date()
+                )
+            val imageFileName = "img_" + timeStamp + "_"
+            val storageDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            return File.createTempFile(imageFileName, ".jpg", storageDir)
+        }
+    }
 }

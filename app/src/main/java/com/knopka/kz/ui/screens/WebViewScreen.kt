@@ -1,56 +1,95 @@
 package com.knopka.kz.ui.screens
 
-import android.content.Context
-import android.graphics.Bitmap
 import android.webkit.WebView
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-import com.walhalla.webview.ChromeView
-import com.walhalla.webview.CustomWebViewClient
-import com.walhalla.webview.ReceivedError
-import com.walhalla.webview.utility.ActivityUtils
-import android.content.Intent
-import android.provider.Settings
-import androidx.compose.foundation.layout.Arrangement
+import android.net.Uri
+import com.walhalla.landing.activity.DLog.d
+import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
 
 @Composable
 fun WebViewScreen(url: String) {
-
     var isLoading by remember { mutableStateOf(false) }
-
     var switchViews by remember { mutableStateOf(false) }
-
     var webView by remember { mutableStateOf<WebView?>(null) }
-
     val context = LocalContext.current
 
+    // Регистрируем launcher для выбора файла
 
+    val fileChooserLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if (WebViewCache.mUploadMessage != null) {
+                var result: Uri? = null
+                try {
+                    result = if (data == null || data.data == null) {
+                        WebViewCache.mCapturedImageURI
+                    } else {
+                        data.data
+                    }
+                } catch (e: Exception) {
+                    d("@@@$e")
+                }
+                WebViewCache.mUploadMessage?.onReceiveValue(result)
+                WebViewCache.mUploadMessage = null
+            }
 
+            if (WebViewCache.mUploadMessages != null) {
+                var results: Array<Uri>? = null
+                try {
+                    if (data != null) {
+                        val dataString = data.dataString
+                        val clipData = data.clipData
+                        if (clipData != null) {
+                            results = Array(clipData.itemCount) { i ->
+                                clipData.getItemAt(i).uri
+                            }
+                        } else if (dataString != null) {
+                            results = arrayOf(Uri.parse(dataString))
+                        }
+                    }
+                    if (results == null && WebViewCache.mCapturedImageURI != null) {
+                        results = arrayOf(WebViewCache.mCapturedImageURI!!)
+                    }
+                } catch (e: Exception) {
+                    d("@@@$e")
+                }
+                WebViewCache.mUploadMessages?.onReceiveValue(results ?: arrayOf())
+                WebViewCache.mUploadMessages = null
+            }
+        } else {
+            if (WebViewCache.mUploadMessage != null) {
+                WebViewCache.mUploadMessage?.onReceiveValue(null)
+                WebViewCache.mUploadMessage = null
+            }
+            if (WebViewCache.mUploadMessages != null) {
+                WebViewCache.mUploadMessages?.onReceiveValue(arrayOf())
+                WebViewCache.mUploadMessages = null
+            }
+        }
+    }
+
+    // Передаем launcher в WebViewCache
+    WebViewCache.fileChooserLauncher = fileChooserLauncher
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -170,132 +209,8 @@ fun WebViewScreen(url: String) {
     }
 }
 
-object WebViewCache {
-    private val cache = mutableMapOf<String, WebView>()
-
-    val loadingStartTime = System.currentTimeMillis()
-    var isFirstLoad = false
-
-    fun get(
-        url: String,
-        context: Context,
-        onLoadingChange: (Boolean) -> Unit
-        //client: CustomWebViewClient
-    ): WebView {
-        return cache.getOrPut(url) {
-
-//            val loadingStartTime by remember{ mutableLongStateOf(System.currentTimeMillis()) }
-//            var isFirstLoad by remember { mutableStateOf(true) }
-
-
-            val client = object : CustomWebViewClient(
-                chromeView = object : ChromeView {
-
-                    override fun onPageStarted(url: String?) {
-                        //loadingStartTime = System.currentTimeMillis()
-                        onLoadingChange(true)
-                    }
-
-                    override fun onPageFinished(url: String?) {
-                        onLoadingChange(false)
-                    }
-
-                    override fun webClientError(failure: ReceivedError?) {
-                    }
-
-                    override fun removeErrorPage() {
-                        //switchViews = false
-                    }
-
-                    override fun setErrorPage(receivedError: ReceivedError?) {
-                        //switchViews = true
-                    }
-
-                    override fun openBrowser(url: String) {
-                        ActivityUtils.openBrowser(context, url)
-                    }
-
-                }, context = context
-            ) {
-
-
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-                        if (isFirstLoad) {
-                            isFirstLoad = false
-                        }
-                        onLoadingChange(false)
-                    }
-                }
-            }
-
-            WebView(context).apply {
-                configureWebView(this)
-                webViewClient = client
-                webChromeClient=...б
-                loadUrl(url)
-            }
-        }.also { webView ->
-//            val loadingStartTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
-//            var isFirstLoad by remember { mutableStateOf(true) }
-
-            val client = object : CustomWebViewClient(
-                chromeView = object : ChromeView {
-
-                    override fun onPageStarted(url: String?) {
-                        //loadingStartTime = System.currentTimeMillis()
-                        onLoadingChange(true)
-                    }
-
-                    override fun onPageFinished(url: String?) {
-                        onLoadingChange(false)
-                    }
-
-                    override fun webClientError(failure: ReceivedError?) {
-                    }
-
-                    override fun removeErrorPage() {
-                        //switchViews = false
-                    }
-
-                    override fun setErrorPage(receivedError: ReceivedError?) {
-                        //switchViews = true
-                    }
-
-                    override fun openBrowser(url: String) {
-                        ActivityUtils.openBrowser(context, url)
-                    }
-
-                }, context = context
-            ) {
-
-
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-                        if (isFirstLoad) {
-                            isFirstLoad = false
-                        }
-                        onLoadingChange(false)
-                    }
-                }
-
-            }
-            webView.webViewClient = client
-            webChromeClient=...
-        }
-    }
-
-    fun clear() {
-        cache.values.forEach { webView ->
-            webView.clearCache(true)
-            webView.destroy()
-        }
-        cache.clear()
-    }
+fun onConfirmation__(allowed: Boolean, resources: Array<String>) {
+    // Реализация для Composable
 }
 
 
