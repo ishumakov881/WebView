@@ -234,7 +234,7 @@ object WebViewCache {
             WebView(context).apply {
                 configureWebView(this)
                 webViewClient = client
-                webChromeClient=...
+                webChromeClient=...б
                 loadUrl(url)
             }
         }.also { webView ->
