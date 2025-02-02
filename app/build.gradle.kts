@@ -27,11 +27,12 @@ android {
         }
     }
 
+    //brand57 brand57
 
     signingConfigs {
         create("config") {
             keyAlias = "knopka"
-            keyPassword = "brand57"
+            keyPassword = "knopka"
             storeFile = file("keystore/brand57.jks")
             storePassword = "brand57"
         }
@@ -82,8 +83,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation(project(":wvcore"))
