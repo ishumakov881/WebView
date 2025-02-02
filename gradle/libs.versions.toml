@@ -23,6 +23,7 @@ espressoCore = "3.6.1"
 onesignal = "5.1.21"
 room = "2.6.1"
 core = "1.15.0"
+transportApi = "3.0.0"
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -64,6 +65,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 core = { module = "androidx.core:core", version.ref = "core" }
+transport-api = { group = "com.google.android.datatransport", name = "transport-api", version.ref = "transportApi" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

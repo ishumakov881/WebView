@@ -1,10 +1,19 @@
 package com.knopka.kz.navigation
 //http://10.0.59.120:5173/search
 sealed class Screen(val route: String, val url: String) {
-    object Home : Screen("home", "https://knopka.kz/")
-    object AddItem : Screen("add_item", "https://knopka.kz/item/add")
-    object Messages : Screen("messages", "https://knopka.kz/cabinet/messages")
-    object Profile : Screen("profile", "https://knopka.kz/cabinet/items")
+//    object Home : Screen("home", "https://knopka.kz/")
+//    object AddItem : Screen("add_item", "https://knopka.kz/item/add")
+//    object Messages : Screen("messages", "https://knopka.kz/cabinet/messages")
+//    object Profile : Screen("profile", "https://knopka.kz/cabinet/items")
+    //https://youtube.com
+
+    //https://fex.net/ru/s/nb1aona
+
+    object Home : Screen("home", "https://fex.net/ru/")
+    object AddItem : Screen("add_item", "https://ps.uci.edu/~franklin/doc/file_upload.html")
+    object Messages : Screen("messages", "https://www.csm-testcenter.org/test?do=show&subdo=common&test=file_upload")
+    object Profile : Screen("profile", "https://www.azurespeed.com/Azure/UploadLargeFile")
+
 
     //https://knopka.kz/cabinet/favs
 

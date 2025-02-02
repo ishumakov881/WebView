@@ -6,3 +6,4 @@
 build/
 *.hprof
 /.kotlin/
+/app/keystore/
