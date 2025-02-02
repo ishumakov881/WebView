@@ -30,7 +30,7 @@ android {
 
     signingConfigs {
         create("config") {
-            keyAlias = "brand57"
+            keyAlias = "knopka"
             keyPassword = "brand57"
             storeFile = file("keystore/brand57.jks")
             storePassword = "brand57"
@@ -91,6 +91,8 @@ dependencies {
 
     // SwipeRefreshLayout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation(libs.firebase.crashlytics)
+    implementation(project(":features:webview"))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -114,4 +116,6 @@ dependencies {
 
     implementation(libs.firebase.messaging)
     implementation(libs.onesignal)
+
+    implementation("com.google.firebase:firebase-crashlytics:19.4.0")
 } 
