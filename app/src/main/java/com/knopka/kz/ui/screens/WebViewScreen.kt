@@ -1,6 +1,8 @@
 package com.knopka.kz.ui.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.webkit.WebSettings
@@ -18,8 +20,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.walhalla.webview.ChromeView
+import com.walhalla.webview.CustomWebViewClient
+import com.walhalla.webview.ReceivedError
 
 @SuppressLint("SetJavaScriptEnabled")
 private fun configureWebView(webView: WebView) {
@@ -77,7 +83,9 @@ private fun fixUserAgent(userAgent: String): String {
 
     // Если версия меньше 9, подменяем на 9
     return if (version < 9) {
-        userAgent.replace(regex, "Android 9")
+        val randomVersion = (9..13).random()
+        userAgent.replace(regex, "Android $randomVersion")
+        //userAgent.replace(regex, "Android 9")
     } else {
         userAgent
     }
@@ -113,10 +121,11 @@ fun WebViewScreen(url: String) {
 //                            removeAllViews()
 //                        }
                         // Получаем WebView из кэша
-                        val cachedWebView = WebViewCache.get(url, context, onLoadingChange = { loading ->
-                            isLoading = loading
-                            isRefreshing = false//loading
-                        }).also { webView = it }
+                        val cachedWebView =
+                            WebViewCache.get(url, context, onLoadingChange = { loading ->
+                                isLoading = loading
+                                isRefreshing = false//loading
+                            }).also { webView = it }
 
                         // Проверяем, есть ли у WebView родитель
                         (cachedWebView.parent as? android.view.ViewGroup)?.removeView(cachedWebView)
@@ -145,7 +154,7 @@ object WebViewCache {
 
     fun get(
         url: String,
-        context: android.content.Context,
+        context: Context,
         onLoadingChange: (Boolean) -> Unit
     ): WebView {
         return cache.getOrPut(url) {
@@ -165,9 +174,48 @@ object WebViewCache {
                 loadUrl(url)
             }
         }.also { webView ->
-            webView.webViewClient = object : WebViewClient() {
+            webView.webViewClient = object : CustomWebViewClient(
+                chromeView = object : ChromeView {
+                    private var loadingStartTime = 0L
+                    override fun onPageStarted(url: String?) {
+                        loadingStartTime = System.currentTimeMillis()
+                        onLoadingChange(true)
+                    }
+
+                    override fun onPageFinished(url: String?) {
+                        onLoadingChange(false)
+                    }
+
+                    override fun webClientError(failure: ReceivedError?) {
+                        //todo"Not yet implemented")
+                    }
+
+                    override fun removeErrorPage() {
+                        //todo"Not yet implemented")
+                    }
+
+                    override fun setErrorPage(receivedError: ReceivedError?) {
+                        //todo"Not yet implemented")
+                    }
+
+                    override fun openBrowser(url: String) {
+                        //TODO("Not yet implemented")
+                    }
+
+                }, context = context
+            ) {
 
                 private var loadingStartTime = 0L
+                override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+                    super.onPageStarted(view, url, favicon)
+                    loadingStartTime = System.currentTimeMillis()
+                    onLoadingChange(true)
+                }
+
+                override fun onPageFinished(view: WebView, url: String) {
+                    super.onPageFinished(view, url)
+                    onLoadingChange(false)
+                }
 
                 override fun onLoadResource(view: WebView?, url: String?) {
                     super.onLoadResource(view, url)
@@ -177,16 +225,6 @@ object WebViewCache {
                     }
                 }
 
-                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                    super.onPageStarted(view, url, favicon)
-                    loadingStartTime = System.currentTimeMillis()
-                    onLoadingChange(true)
-                }
-
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    onLoadingChange(false)
-                }
             }
         }
     }
