@@ -1,10 +1,12 @@
 package com.knopka.kz.ui.screens
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Handler
+
 import android.os.Looper
 import android.os.Message
 import android.os.Parcelable
@@ -36,22 +38,33 @@ object WebViewCache {
 
     private val cache = mutableMapOf<String, WebView>()
 
-    val loadingStartTime = System.currentTimeMillis()
-    var isFirstLoad = false
+    //val loadingStartTime = System.currentTimeMillis()
 
     var fileChooserLauncher: ActivityResultLauncher<Intent>? = null
 
     fun get(
         url: String,
         context: Context,
-        onLoadingChange: (Boolean) -> Unit
+
+        isFirstLoad: (Boolean) -> Unit,
+        chromView: ChromeView
     ): WebView {
 
+        println("@@@${cache.size}")
+        val isFromCache = cache.containsKey(url)
+        println("@@@CACHE: URL exists in cache: $isFromCache")
+        if (!isFromCache) {  // Новый WebView
+            println("@@@CACHE: Using FRESH WebView")
+            isFirstLoad(true)
+        } else {  // Из кеша
+            println("@@@CACHE: Using CACHED WebView")
+            isFirstLoad(false)
+        }
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
         val chromeClient = object : MyWebChromeClient(object : Callback {
             override fun onProgressChanged(progress: Int) {
-                //TODO("Not yet implemented")
+                println("@@@@$progress")
             }
 
             override fun openFileChooser(uploadMsg: ValueCallback<Uri?>?, s: String?) {
@@ -59,7 +72,6 @@ object WebViewCache {
                 DLog.d("@mUploadMessage@$mUploadMessage")
                 openImageChooser()
             }
-
 
 
             override fun openFileChooser(
@@ -119,6 +131,7 @@ object WebViewCache {
                 // Обработка отмены запроса разрешений
             }
 
+            @SuppressLint("SetJavaScriptEnabled")
             override fun onCreateWindow(
                 view: WebView,
                 isDialog: Boolean,
@@ -147,39 +160,14 @@ object WebViewCache {
 
         return cache.getOrPut(url) {
 
+
             WebView(context).apply {
                 val wv = this
 
                 configureWebView(wv)
                 val client = object : CustomWebViewClient(
                     wv,  // передаем текущий WebView
-                    chromeView = object : ChromeView {
-
-                        override fun onPageStarted(url: String?) {
-                            //loadingStartTime = System.currentTimeMillis()
-                            onLoadingChange(true)
-                        }
-
-                        override fun onPageFinished(url: String?) {
-                            onLoadingChange(false)
-                        }
-
-                        override fun webClientError(failure: ReceivedError) {
-                        }
-
-                        override fun removeErrorPage() {
-                            //switchViews = false
-                        }
-
-                        override fun setErrorPage(receivedError: ReceivedError) {
-                            //switchViews = true
-                        }
-
-                        override fun openBrowser(url: String) {
-                            ActivityUtils.openBrowser(context, url)
-                        }
-
-                    },
+                    chromeView = chromView,
                     context = context
                 ) {
 
@@ -187,61 +175,38 @@ object WebViewCache {
                     override fun onLoadResource(view: WebView?, url: String?) {
                         super.onLoadResource(view, url)
                         // Хак: если прошло больше 1 секунды - скрываем прогресс
-                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
-                            if (isFirstLoad) {
-                                isFirstLoad = false
-                            }
-                            onLoadingChange(false)
-                        }
+//                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
+//                            if (isFirstLoad) {
+//                                isFirstLoad = false
+//                            }
+//                            onLoadingChange(false)
+//                        }
                     }
 
                 }
+
                 webViewClient = client
                 webChromeClient = chromeClient
                 loadUrl(url)
             }
         }.also { webView ->
+
+
             val client = object : CustomWebViewClient(
                 webView,
-                chromeView = object : ChromeView {
-
-                    override fun onPageStarted(url: String?) {
-                        //loadingStartTime = System.currentTimeMillis()
-                        onLoadingChange(true)
-                    }
-
-                    override fun onPageFinished(url: String?) {
-                        onLoadingChange(false)
-                    }
-
-                    override fun webClientError(failure: ReceivedError) {
-                    }
-
-                    override fun removeErrorPage() {
-                        //switchViews = false
-                    }
-
-                    override fun setErrorPage(receivedError: ReceivedError) {
-                        //switchViews = true
-                    }
-
-                    override fun openBrowser(url: String) {
-                        ActivityUtils.openBrowser(context, url)
-                    }
-
-                }, context = context
+                chromeView = chromView, context = context
             ) {
 
 
                 override fun onLoadResource(view: WebView?, url: String?) {
                     super.onLoadResource(view, url)
-                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-                        if (isFirstLoad) {
-                            isFirstLoad = false
-                        }
-                        onLoadingChange(false)
-                    }
+//                    // Хак: если прошло больше 1 секунды - скрываем прогресс
+//                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
+//                        if (isFirstLoad) {
+//                            isFirstLoad = false
+//                        }
+//                        onLoadingChange(false)
+//                    }
                 }
 
             }
