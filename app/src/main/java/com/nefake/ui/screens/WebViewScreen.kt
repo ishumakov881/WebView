@@ -9,6 +9,7 @@ import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -139,7 +140,7 @@ fun WebViewScreen(
                     navigationIcon = {
                         if (canGoBack) {
                             MenuIcon(
-                                icon = Icons.Default.ArrowBack,
+                                icon = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Назад",
                                 onClick = { webView?.goBack() },
                                 tint = if (isDarkTheme) Color.White else Color.Black

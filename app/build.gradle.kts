@@ -14,8 +14,8 @@ plugins {
 
 fun generateVersion(): Pair<Int, String> {
     val major = 2  // Используем как buildNumber и первую цифру версии
-    val minor = 2  // Новые фичи
-    val patch = 0  // Фиксы
+    val minor = 3  // Новые фичи
+    val patch = 10  // Фиксы
 
     val date = LocalDate.now()
     val year = date.year % 100
