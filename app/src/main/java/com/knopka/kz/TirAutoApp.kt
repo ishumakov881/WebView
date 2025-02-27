@@ -85,6 +85,9 @@ class TirAutoApp : Application() {
         }
     }
 
+    //https://docs.google.com/document/d/e/2PACX-1vT6GWga5ZDECsiTJZj0UGiys2l6vToEzSPH_bZd27WNlLCshV4JbkJanJkUERUTd3Iv7S6VL2NU3Nwe/pub
+
+    //7c793af0-4784-4681-95fd-c07bb06cf15c
     //c651c4ff-d29e-4d9b-8601-a971c2e4711d
     companion object {
         private const val ONE_SIGNAL: kotlin.String = "5b807064-3a4d-4001-b062-e672e7ffbb07"
