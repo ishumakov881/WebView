@@ -7,7 +7,7 @@ plugins {
 
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
+    //alias(libs.plugins.firebase.crashlytics)
 
     id("com.google.devtools.ksp")
 }
@@ -35,7 +35,7 @@ android {
     val version = generateVersion()
 
     defaultConfig {
-        applicationId = "com.knopka.kz"
+        applicationId = "com.filmhd1080.android"
         minSdk = 21
         targetSdk = 35
 
@@ -52,17 +52,17 @@ android {
 
     signingConfigs {
         create("config") {
-            keyAlias = "knopka"
-            keyPassword = "knopka"
-            storeFile = file("keystore/brand57.jks")
-            storePassword = "brand57"
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("keystore/keystore.fhd1080apk.jks")
+            storePassword = "release"
         }
     }
 
     buildTypes {
 
-        getByName("debug"){
-            applicationIdSuffix = ".debug"
+        getByName("debug") {
+            //applicationIdSuffix = ".debug"
             signingConfig = signingConfigs.getByName("config")
         }
 
@@ -85,6 +85,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -97,6 +98,10 @@ android {
 }
 
 dependencies {
+
+
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -107,14 +112,14 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
     // SwipeRefreshLayout
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation(libs.firebase.crashlytics)
-    implementation(project(":features:webview"))
+    implementation(libs.androidx.swiperefreshlayout)
+
+    //implementation(project(":features:webview"))
     implementation(libs.transport.api)
 
     testImplementation("junit:junit:4.13.2")
@@ -134,11 +139,16 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.coil.compose)
-    implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.4")
-    implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.4")
+    implementation(libs.coil.network.ktor2)
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.firebase.messaging)
     implementation(libs.onesignal)
 
-    implementation("com.google.firebase:firebase-crashlytics:19.4.0")
+//    implementation(libs.google.firebase.crashlytics)
+//    implementation(libs.firebase.crashlytics)
+    
+    //implementation("io.appmetrica.analytics:analytics:7.2.0")
+    implementation("io.appmetrica.analytics:analytics:7.7.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 } 

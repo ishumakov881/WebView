@@ -1,7 +1,8 @@
 package com.lds.wvrss.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -22,32 +23,35 @@ import com.walhalla.webview.ActivityUtils
 import com.walhalla.webview.ChromeView
 import com.walhalla.webview.DownloadUtility
 import com.walhalla.webview.ReceivedError
-import com.walhalla.webview.UWView
 import com.walhalla.webview.WVTools
 import com.walhalla.webview.WebViewAppConfig
 import java.io.ByteArrayInputStream
 import java.util.Locale
 
 
-class CustomWebViewClient0(
+open class CustomWebViewClient(
     private val sessionName: String,
-    webView: UWView,
+    mView: WebView,
     private val chromeView: ChromeView,
-    private val context: Activity
+    private val context: Context
+
 ) :
     WebViewClient() {
     //RequestInspector
-    private val blockedDomains0: List<String> =
-        WVTools.loadBlockedDomains(context, R.raw.blockedhost)
 
 
     var receivedError: ReceivedError? = null
 
 
-    private val downloadFileTypes: Array<String> =
-        context.resources.getStringArray(R.array.download_file_types)
-    private val linksOpenedInExternalBrowser: Array<String> =
-        context.resources.getStringArray(R.array.links_opened_in_external_browser)
+    private val blockedDomains0: List<String>
+    private val downloadFileTypes: List<String>
+    private val linksOpenedInExternalBrowser: List<String>
+
+    init {
+        blockedDomains0 = WVTools.loadBlockedDomains(context, R.raw.blockedhost)
+        downloadFileTypes = context.resources.getStringArray(R.array.download_file_types).toList()
+        linksOpenedInExternalBrowser = context.resources.getStringArray(R.array.links_opened_in_external_browser).toList()
+    }
 
     private var _homeUrl_: String? = null
 
@@ -76,7 +80,7 @@ class CustomWebViewClient0(
 //        a
 //    )
 
-    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         if (_homeUrl_ == null) {
             _homeUrl_ = url
         }
@@ -90,15 +94,57 @@ class CustomWebViewClient0(
         super.onPageStarted(view, url, favicon)
     }
 
-    override fun onPageFinished(view: WebView, url: String) {
-        super.onPageFinished(view, url)
+    override fun onPageFinished(webView: WebView, url: String) {
+        super.onPageFinished(webView, url)
+        //webView.setInitialScale(((100*webView.getScale()).toInt()));
+
+
+        // Внедряем JavaScript-код после загрузки страницы
+//        val jsCode = """
+//            (function() {
+//                // Функция для изменения стилей элемента
+//                function styleCloseBtn() {
+//                    const closeBtn = document.getElementById('close-btn');
+//                    if (closeBtn) {
+//                        closeBtn.style.fontSize = '40px'; // Увеличиваем размер
+//                        closeBtn.style.color = 'red'; // Меняем цвет на красный
+//                    }
+//                }
+//
+//                // Отслеживаем появление элемента с помощью MutationObserver
+//                const observer = new MutationObserver((mutationsList) => {
+//                    for (let mutation of mutationsList) {
+//                        if (mutation.type === 'childList') {
+//                            const closeBtn = document.getElementById('close-btn');
+//                            if (closeBtn) {
+//                                styleCloseBtn();
+//                                observer.disconnect(); // Останавливаем наблюдение после изменения
+//                            }
+//                        }
+//                    }
+//                });
+//
+//                // Начинаем наблюдение за изменениями в DOM
+//                observer.observe(document.body, { childList: true, subtree: true });
+//            })();
+//
+//            """.trimIndent()
+//
+//
+//        // Выполняем JavaScript-код в контексте WebView
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            webView.evaluateJavascript(jsCode, null)
+//        } else {
+//            webView.loadUrl("javascript:$jsCode")
+//        }
+
         if (BuildConfig.DEBUG) {
             printParams("<onPageFinished>", url)
         }
-        //        if (BuildConfig.DEBUG) {
-//            int scale = (int) (100 * view.getScale());
-//            Log.d(TAG, "[" + url + "], {Scale}->" + scale + ", " + receivedError);
-//        }
+        if (BuildConfig.DEBUG) {
+            val scale = (100 * webView.scale).toInt()
+            Log.d(TAG, ("[$url").toString() + "], {Scale}->" + scale + ", " + receivedError)
+        }
         val activity = this.chromeView
 
         //error is fixed
@@ -110,7 +156,7 @@ class CustomWebViewClient0(
         receivedError = null //reset error
 
         if (KEY_ERROR_ == url) {
-            view.clearHistory()
+            webView.clearHistory()
         }
 
         if (activity != null) {
@@ -291,19 +337,17 @@ class CustomWebViewClient0(
     }
 
     private fun handleUrl(view: WebView, url: String): Boolean {
-        val var0 = isDownloadableFile(url)
-        if (var0) {
-            Toast.makeText(context, R.string.fragment_main_downloading, Toast.LENGTH_LONG).show()
-            DownloadUtility.downloadFile(context, url, DownloadUtility.getFileName(url))
-            return true
-        } else if (url.startsWith("tg:") || url.startsWith("https://t.me/")) {
-            ActivityUtils.starttg(context, url)
-            return true //handle itself
-        } else if (url.startsWith("file:///android_asset")) {
-            Toast.makeText(context, "@@@@@@@@@", Toast.LENGTH_SHORT).show()
-            return false
-        } else if ((url.startsWith("http://") || url.startsWith("https://"))) {
-            //            if (url.startsWith("https://accounts.google.com/o/oauth2") || url.contains("redirect_uri=")) {
+        when {
+            isDownloadableFile(url) -> {
+                Toast.makeText(context, R.string.fragment_main_downloading, Toast.LENGTH_LONG)
+                    .show()
+                DownloadUtility.downloadFile(context, url, DownloadUtility.getFileName(url))
+                return true
+            }
+
+
+            url.startsWith("http://") || url.startsWith("https://") -> {
+                //            if (url.startsWith("https://accounts.google.com/o/oauth2") || url.contains("redirect_uri=")) {
 //                // Новое значение для параметра redirect_uri
 //                String encodedRedirectUri = "";
 //                try {
@@ -336,91 +380,140 @@ class CustomWebViewClient0(
 //            }
 
 
-            //Log.d(TAG, "@c@");
-            // determine for opening the link externally or internally
+                //Log.d(TAG, "@c@");
+                // determine for opening the link externally or internally
 
 
-            var openInExternalApp = isLinkExternal(url) //openInExternalApp app
-            val internal: Boolean = DownloadUtility.isLinkInternal(url) //internal webView
-            if (!openInExternalApp && !internal) {
-                openInExternalApp = WebViewAppConfig.OPEN_LINKS_IN_EXTERNAL_BROWSER
-            }
-            //My new Code
-            if (url.endsWith(".apk")) {
-                chromeView.openBrowser(url)
-                return true
-            }
+                var openInExternalApp = isLinkExternal(url) //openInExternalApp app
+                val internal: Boolean = DownloadUtility.isLinkInternal(url) //internal webView
+                if (!openInExternalApp && !internal) {
+                    openInExternalApp = WebViewAppConfig.OPEN_LINKS_IN_EXTERNAL_BROWSER
+                }
+                //My new Code
+                if (url.endsWith(".apk")) {
+                    chromeView.openBrowser(url)
+                    return true
+                }
 
-            // open the link
-            if (openInExternalApp) {
-                Log.d(TAG, "@@@")
-                chromeView.openBrowser(url)
-                return true
-            } else {
-                if (isCheckSameDomainEnabled) {
-                    if (isSameDomain(url, homeDomain9)) {
-                        Log.d(
-                            TAG,
-                            "NOT_OVERRIDE:isSameDomain: $url"
-                        )
-                        return false
-                    } else {
-                        Log.d(
-                            TAG,
-                            "blocked: $url, $homeDomain9"
-                        )
-                        //url blocked
-                        return true
-                    }
+                // open the link
+                if (openInExternalApp) {
+                    Log.d(TAG, "@@@")
+                    chromeView.openBrowser(url)
+                    return true
                 } else {
-                    //@@@ showActionBarProgress(true);
-                    Log.d(TAG, "NOT_OVERRIDE: $url")
-                    return false
+                    if (isCheckSameDomainEnabled) {
+                        if (isSameDomain(url, homeDomain9)) {
+                            Log.d(
+                                TAG,
+                                "NOT_OVERRIDE:isSameDomain: $url"
+                            )
+                            return false
+                        } else {
+                            Log.d(
+                                TAG,
+                                "blocked: $url, $homeDomain9"
+                            )
+                            //url blocked
+                            return true
+                        }
+                    } else {
+                        //@@@ showActionBarProgress(true);
+                        Log.d(TAG, "NOT_OVERRIDE: $url")
+                        return false
+                    }
                 }
             }
-        } else if (url.startsWith("mailto:")) {
-            try {
-                val mailTo = MailTo.parse(url)
-                ActivityUtils.startEmailActivity(context, mailTo.to, mailTo.subject, mailTo.body)
-            } catch (ignored: ParseException) {
-            }
-            return true
-        } else if (url.startsWith("tel:")) {
-            ActivityUtils.startCallActivity(context, url)
-            return true
-        } else if (url.startsWith("sms:")) {
-            ActivityUtils.startSmsActivity(context, url)
-            return true
-        } else if (url.startsWith("geo:")) {
-            ActivityUtils.startMapSearchActivity(context, url)
-            return true
-        } else if (url.startsWith("yandexnavi:")) {
-            ActivityUtils.startyandexnavi(context, url)
-            return true
-        } else if (url.startsWith("intent://")) {
-            if (url.startsWith("intent://maps.yandex")) {
-                ActivityUtils.startMapYandex(context, url.replace("intent://", "https://"))
+
+
+            url.startsWith("tg:") || url.startsWith("https://t.me/") -> {
+                ActivityUtils.starttg(context, url)
                 return true
             }
+
+            url.startsWith("market:") -> {
+                ActivityUtils.market(context, url)
+                return true
+            }
+
+            url.startsWith("intent:") -> {
+                ActivityUtils.handleIntentUrl(context, url)
+                return true //handle itself
+            }
+
+            url.startsWith("file:///android_asset") -> {
+                Toast.makeText(context, "@@@@@@@@@", Toast.LENGTH_SHORT).show()
+                return false
+            }
+
+
+
+            url.startsWith("mailto:") -> {
+                try {
+                    val mailTo = MailTo.parse(url)
+                    ActivityUtils.startEmailActivity(
+                        context,
+                        mailTo.to,
+                        mailTo.subject,
+                        mailTo.body
+                    )
+                } catch (_: ParseException) {
+                }
+                return true
+            }
+
+            url.startsWith("tel:") -> {
+                ActivityUtils.startCallActivity(context, url)
+                return true
+            }
+
+            url.startsWith("sms:") -> {
+                ActivityUtils.startSmsActivity(context, url)
+                return true
+            }
+
+            url.startsWith("geo:") -> {
+                ActivityUtils.startMapSearchActivity(context, url)
+                return true
+            }
+
+            url.startsWith("yandexnavi:") -> {
+                ActivityUtils.startyandexnavi(context, url)
+                return true
+            }
+            url.contains(":") -> { // Проверяем, что это URI со схемой
+                ActivityUtils.resolveUrl(context, url)
+                return true
+            }
+
+            else -> {
+                if (url.startsWith("intent://")) {
+                    if (url.startsWith("intent://maps.yandex")) {
+                        ActivityUtils.startMapYandex(context, url.replace("intent://", "https://"))
+                        return true
+                    }
 //bnk            else if (InAppBrowserUtils.isNspb(url)) {
 //bnk                return InAppBrowserUtils.handleNspb(view, url);
 //bnk            } else if (url.startsWith("intent://pay.mironline.ru")) {
 //bnk                InAppBrowserUtils.paymironlineru(context, url);
 //bnk                return true;
 //bnk            }
-            return false
-        } else {
-            if (isConnected) {
-                // return false to let the WebView handle the URL
-                return false
-            } else {
-                // show the proper "not connected" message
-                view.loadData(offlineMessageHtml, "text/html", "utf-8")
-                // return true if the host application wants to leave the current
-                // WebView and handle the url itself
-                return true
+                    return false
+                } else {
+                    if (isConnected) {
+                        // return false to let the WebView handle the URL
+                        return false
+                    } else {
+                        // show the proper "not connected" message
+                        view.loadData(offlineMessageHtml, "text/html", "utf-8")
+                        // return true if the host application wants to leave the current
+                        // WebView and handle the url itself
+                        return true
+                    }
+                }
             }
         }
+
+
     }
 
     private fun isSameDomain(url: String, baseDomain: String?): Boolean {
@@ -679,7 +772,7 @@ class CustomWebViewClient0(
     //    }
     override fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
         super.onScaleChanged(view, oldScale, newScale)
-        Log.d(TAG, "@@$oldScale@@$newScale")
+        println("Scale -> @@$oldScale@@$newScale")
     }
 
     fun setCheckSameDomain() {

@@ -18,24 +18,25 @@ fun KnopkaApp() {
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
 
     Scaffold(
-        bottomBar = {
-            KnopkaBottomNavigation(
-                currentRoute = currentRoute,
-                onNavigate = { screen ->
-                    navController.navigate(screen.route) {
-                        // Очищаем бэкстек до выбранного экрана
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        // Избегаем дублирования экранов в стеке
-                        launchSingleTop = true
-                        // Восстанавливаем состояние при возврате
-                        restoreState = true
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+//        bottomBar = {
+//            KnopkaBottomNavigation(
+//                currentRoute = currentRoute,
+//                onNavigate = { screen ->
+//                    navController.navigate(screen.route) {
+//                        // Очищаем бэкстек до выбранного экрана
+//                        popUpTo(navController.graph.startDestinationId) {
+//                            saveState = true
+//                        }
+//                        // Избегаем дублирования экранов в стеке
+//                        launchSingleTop = true
+//                        // Восстанавливаем состояние при возврате
+//                        restoreState = true
+//                    }
+//                }
+//            )
+//        }
+    ) {
+        paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             KnopkaNavHost(navController = navController)
         }

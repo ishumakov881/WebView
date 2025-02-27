@@ -1,5 +1,5 @@
 package com.walhalla.webview
 
-class ReceivedError {
+class ReceivedError(var errorCode: Int, var description: String, var failingUrl: String) {
 
 }

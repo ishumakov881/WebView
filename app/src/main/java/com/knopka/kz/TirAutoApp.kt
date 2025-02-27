@@ -1,8 +1,10 @@
 package com.knopka.kz;
 
-import android.app.Application;
+import android.app.Application
 import com.onesignal.OneSignal
 import com.onesignal.OneSignal.initWithContext
+import io.appmetrica.analytics.AppMetrica
+import io.appmetrica.analytics.AppMetricaConfig
 
 class TirAutoApp : Application() {
 
@@ -61,25 +63,29 @@ class TirAutoApp : Application() {
             println("@@@@@@@@@@" + id)
         }
 
+
         //io.appmetrica.analytics.ValidationException: Invalid ApiKey
-//        try {
-//            // Creating an extended library configuration.
-//            AppMetricaConfig config = AppMetricaConfig.newConfigBuilder(API_APPMETRICA_KEY).build();
-//            // Initializing the AppMetrica SDK.
-//            AppMetrica.activate(this, config);
-//
-//            AppMetricaPush.activate(this);
-////        AppMetricaPush.activate(
-////                getApplicationContext(),
-////                new FirebasePushServiceControllerProvider(this),
-////                new HmsPushServiceControllerProvider(this)
-////        );
-//        }catch (io.appmetrica.analytics.ValidationException |java.lang.IllegalStateException e){
-//            //DLog.handleException(e);
-//        }
+        try {
+            // Creating an extended library configuration.
+            val config: AppMetricaConfig =
+                AppMetricaConfig.newConfigBuilder(API_APPMETRICA_KEY).build()
+            // Initializing the AppMetrica SDK.
+            AppMetrica.activate(this, config)
+//            AppMetricaPush.activate(this)
+//        AppMetricaPush.activate(
+//                getApplicationContext(),
+//                new FirebasePushServiceControllerProvider(this),
+//                new HmsPushServiceControllerProvider(this)
+//        );
+        } catch (e: io.appmetrica.analytics.ValidationException) {
+            //DLog.handleException(e);
+        } catch (e: IllegalStateException) {
+        }
     }
     //c651c4ff-d29e-4d9b-8601-a971c2e4711d
     companion object {
-        private const val OAI: kotlin.String = "fed3e169-a399-4d17-8f72-233701bc2db9"
+        private const val OAI: kotlin.String = "b7ee58fd-ac54-4a6b-a28d-782a67de1672"
+        private const val API_APPMETRICA_KEY: kotlin.String = "be4e2c7d-f168-4445-b5b8-99802a02d168"
+
     }
 }

@@ -30,5 +30,6 @@ include(":app")
 include(":wvcore")
 include(":wvrss")
 
-include(":features:webview")
-project(":features:webview").projectDir = File("D:\\walhalla\\sdk\\android\\ui\\features\\webview")
+//include(":features:webview")
+//project(":features:webview").projectDir = File("G:\\android\\Landing\\features\\webview")
+include(":testtest")

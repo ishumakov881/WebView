@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,9 +15,8 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -35,26 +33,14 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import com.knopka.kz.BuildConfig.VERSION_NAME
-import com.knopka.kz.R
-
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.size
 import com.walhalla.webview.ActivityUtils
 
 @Composable
 fun WebViewScreen(url: String) {
-
 
 
     var isFullscreen by remember { mutableStateOf(false) }
@@ -75,12 +61,26 @@ fun WebViewScreen(url: String) {
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
 
-    BackHandler(enabled = !isFullscreen) {
-        if (webView?.canGoBack() == true) {
-            webView?.goBack() // Возвращаемся в WebView
-        } else {
-            backDispatcher?.onBackPressed() // Стандартное поведение (выход из приложения или переход назад)
-        }
+//    BackHandler(enabled = !isFullscreen) {
+//        if (webView?.canGoBack() == true) {
+//            webView?.goBack() // Возвращаемся в WebView
+//        } else {
+//            backDispatcher?.onBackPressed() // Стандартное поведение (выход из приложения или переход назад)
+//        }
+//    }
+
+    BackHandler(enabled = true) {
+        if (isFullscreen) {
+            webView?.evaluateJavascript(
+                "document.exitFullscreen && document.exitFullscreen();",
+                null
+            )
+        } else
+            if (webView?.canGoBack() == true) {
+                webView?.goBack() // Возвращаемся в WebView
+            } else {
+                backDispatcher?.onBackPressed() // Стандартное поведение (выход из приложения или переход назад)
+            }
     }
 
 
@@ -322,7 +322,7 @@ fun WebViewScreen(url: String) {
                                 isRefreshing = false
                             }
 
-                            val chromView = object : ChromeView {
+                            val chromeView = object : ChromeView {
                                 override fun onPageStarted(url: String?) {
                                     onLoadingChange(true)
                                 }
@@ -349,7 +349,7 @@ fun WebViewScreen(url: String) {
                             val cachedWebView = WebViewCache.get(
                                 url,
                                 context,
-                                chromView = chromView,
+                                chromView = chromeView,
                                 isFirstLoad = {
                                     isFirstLoad = it
                                     if (isFirstLoad) {
@@ -374,7 +374,9 @@ fun WebViewScreen(url: String) {
 
                             cachedWebView.alpha = 0.99f
 
-                            (cachedWebView.parent as? android.view.ViewGroup)?.removeView(cachedWebView)
+                            (cachedWebView.parent as? android.view.ViewGroup)?.removeView(
+                                cachedWebView
+                            )
                             addView(cachedWebView)
 
                             setOnRefreshListener {
@@ -411,59 +413,15 @@ fun WebViewScreen(url: String) {
         }
 
 
-
         // Показываем анимацию загрузки только при первом запуске
-//        if (isFirstLoad) {
-//            Box(
-//                modifier = Modifier.fillMaxSize(),
-//                contentAlignment = androidx.compose.ui.Alignment.Center
-//            ) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.size(48.dp),
-//                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-//                )
+//        if (isFirstLoad) { Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+//                CircularProgressIndicator(modifier = Modifier.size(48.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
 //            }
 //        }
 
 
         if (isFirstLoad) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface) // Фон сплеш-экрана
-                    .padding(16.dp),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // 1. Иконка приложения (круглая)
-                    Image(
-                        painter = painterResource(id = R.drawable.app_icon), // Замените на вашу иконку
-                        contentDescription = "App Icon",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape) // Делаем иконку круглой
-                            .background(Color.LightGray.copy(alpha = 0.3f)) // Опционально: добавляем фон
-                    )
-
-                    // 2. Название программы
-                    Text(
-                        text = stringResource(id = R.string.app_name), // Название программы из strings.xml
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    // 3. Версия приложения
-                    Text(
-                        text = "Version ${VERSION_NAME}", // Версия из BuildConfig
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            MySplashScreen()
         }
 
         // Показываем индикатор загрузки

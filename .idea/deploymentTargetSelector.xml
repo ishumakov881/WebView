@@ -4,16 +4,16 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-31T14:10:16.584382500Z">
+        <DropdownSelection timestamp="2025-02-26T08:37:48.879409600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=emulator-5556;connection=bb59b7c3" />
+              <DeviceId pluginId="Default" identifier="serial=emulator-5556;connection=66defd10" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="wvcore">
+      <SelectionState runConfigName="testtest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
