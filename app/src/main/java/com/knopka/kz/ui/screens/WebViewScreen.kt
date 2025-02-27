@@ -82,7 +82,11 @@ fun WebViewScreen(url: String) {
             if (webView?.canGoBack() == true) {
                 webView?.goBack() // Возвращаемся в WebView
             } else {
-                backDispatcher?.onBackPressed() // Стандартное поведение (выход из приложения или переход назад)
+                try {
+                    backDispatcher?.onBackPressed() // Стандартное поведение (выход из приложения или переход назад)
+                } catch (e: Exception) {
+                    println("$e")
+                }
             }
     }
 
@@ -321,7 +325,6 @@ fun WebViewScreen(url: String) {
                     factory = { context ->
                         SwipeRefreshLayout(context).apply {
                             val onLoadingChange: (Boolean) -> Unit = { loading ->
-
 
 
                                 isLoading = loading

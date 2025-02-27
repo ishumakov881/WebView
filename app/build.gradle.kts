@@ -102,7 +102,7 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
 
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation(libs.androidx.core.ktx)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
@@ -152,5 +152,5 @@ dependencies {
     implementation("io.appmetrica.analytics:analytics:7.7.0")
     implementation("io.appmetrica.analytics:push:4.0.0")
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp)
 } 
