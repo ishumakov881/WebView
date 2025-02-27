@@ -200,16 +200,16 @@ object WebViewCache {
                 ) {
 
 
-                    override fun onLoadResource(view: WebView?, url: String?) {
-                        super.onLoadResource(view, url)
-                        // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
-//                            if (isFirstLoad) {
-//                                isFirstLoad = false
-//                            }
-//                            onLoadingChange(false)
-//                        }
-                    }
+//                    override fun onLoadResource(view: WebView?, url: String?) {
+//                        super.onLoadResource(view, url)
+//                        // Хак: если прошло больше 1 секунды - скрываем прогресс
+////                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
+////                            if (isFirstLoad) {
+////                                isFirstLoad = false
+////                            }
+////                            onLoadingChange(false)
+////                        }
+//                    }
 
                 }
 
@@ -230,16 +230,16 @@ object WebViewCache {
             ) {
 
 
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-//                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-//                        if (isFirstLoad) {
-//                            isFirstLoad = false
-//                        }
-//                        onLoadingChange(false)
-//                    }
-                }
+//                override fun onLoadResource(view: WebView?, url: String?) {
+//                    super.onLoadResource(view, url)
+////                    // Хак: если прошло больше 1 секунды - скрываем прогресс
+////                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
+////                        if (isFirstLoad) {
+////                            isFirstLoad = false
+////                        }
+////                        onLoadingChange(false)
+////                    }
+//                }
 
             }
             webView.webViewClient = client

@@ -2,7 +2,6 @@ package com.lds.wvrss.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -99,6 +98,24 @@ open class CustomWebViewClient(
         //webView.setInitialScale(((100*webView.getScale()).toInt()));
 
 
+//        val jsCode = """
+//        (function() {
+//            var elements = document.querySelectorAll('.vim-preroll, .vim-overroll');
+//            elements.forEach(function(el) {
+//                el.remove();
+//            });
+//        })();
+//    """.trimIndent()
+//        val jsCode = """
+//        (function() {
+//            var elements = document.querySelectorAll('.vim-overroll');
+//            elements.forEach(function(el) {
+//                el.remove();
+//            });
+//        })();
+//    """.trimIndent()
+//        webView.evaluateJavascript(jsCode, null)
+
         // Внедряем JavaScript-код после загрузки страницы
 //        val jsCode = """
 //            (function() {
@@ -141,10 +158,10 @@ open class CustomWebViewClient(
         if (BuildConfig.DEBUG) {
             printParams("<onPageFinished>", url)
         }
-        if (BuildConfig.DEBUG) {
-            val scale = (100 * webView.scale).toInt()
-            Log.d(TAG, ("[$url").toString() + "], {Scale}->" + scale + ", " + receivedError)
-        }
+//        if (BuildConfig.DEBUG) {
+//            val scale = (100 * webView.scale)
+//            Log.d(TAG, ("[$url").toString() + "], {Scale}->" + scale + ", " + receivedError)
+//        }
         val activity = this.chromeView
 
         //error is fixed
@@ -210,8 +227,11 @@ open class CustomWebViewClient(
         // Проверяем, находится ли URL в списке заблокированных доменов
 
         for (domain in blockedDomains0) {
+
+            println("@@@ isBlocked: $url")
+
+
             if (url.contains(domain)) {
-                //Log.d(TAG, "isBlocked: "+url);
                 return true
             }
         }
@@ -770,9 +790,13 @@ open class CustomWebViewClient(
     //
     //        handler.proceed();// Пропустить проверку сертификата
     //    }
+
     override fun onScaleChanged(view: WebView, oldScale: Float, newScale: Float) {
         super.onScaleChanged(view, oldScale, newScale)
-        println("Scale -> @@$oldScale@@$newScale")
+        // Здесь вы можете получить текущий масштаб WebView
+        val currentScale = newScale
+        // Добавьте здесь свою логику для обработки изменения масштаба
+        println("Масштаб изменился: $currentScale, OldScale: $oldScale")
     }
 
     fun setCheckSameDomain() {

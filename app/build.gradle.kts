@@ -35,7 +35,7 @@ android {
     val version = generateVersion()
 
     defaultConfig {
-        applicationId = "com.filmhd1080.android"
+        applicationId = "com.filmhd1080.app"
         minSdk = 21
         targetSdk = 35
 
@@ -100,7 +100,7 @@ android {
 dependencies {
 
 
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation(libs.androidx.appcompat)
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -150,5 +150,7 @@ dependencies {
     
     //implementation("io.appmetrica.analytics:analytics:7.2.0")
     implementation("io.appmetrica.analytics:analytics:7.7.0")
+    implementation("io.appmetrica.analytics:push:4.0.0")
+
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 } 

@@ -77,7 +77,7 @@ fun configureWebView(webView: WebView) {
 
     }
 ////
-//    val scale = (100 * webView.scale).toInt()
+//    val scale = (100 * webView.scale)
 //    webView.setInitialScale(scale)
 //
 //    webView.getSettings().loadWithOverviewMode = true

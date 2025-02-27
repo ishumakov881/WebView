@@ -2,24 +2,7 @@
 <resources>
 
     <style name="Theme.WebView" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- Опционально уберите статус-бар для полноэкранного режима
 
-
-
-
-        Фичи:
-        Полный фулскрин без верхнего системного тулбара
-        Обработка кнопки fullscreen в видеоплеерах
-        Реализация поворота экрана с сохранением состояния WebView
-        Бекстек навигация включена (выключена для bottomNavigation)
-
-
-
-        Обновления
-        =======
-        SplashScreen Fixed & Закрытие фулскрина кнопкой назад
-        Обработка ссылок для шаринга контента в социальных сетях
-        -->
         <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.knopka.kz.navigation.Screen
+import com.knopka.kz.repository.GoogleSpreadheetsRepository
+
 import com.knopka.kz.ui.components.WebViewScreen1
 import com.knopka.kz.ui.screens.MySplashScreen
 import com.knopka.kz.ui.screens.WebViewScreen
@@ -47,7 +49,10 @@ class MainActivity : ComponentActivity() {
                 var url: String by remember { mutableStateOf<String>(""/*Screen.Home.url*/) }
 
                 LaunchedEffect(Unit) {
-                    url = fetchUrlFromServer()
+                    val repository = GoogleSpreadheetsRepository()
+                    launch {
+                        url = repository.fetchUrlFromGoogleDrive() ?: Screen.Home.url
+                    }
                 }
 
                 if (!url.isNullOrEmpty()) {
@@ -56,44 +61,6 @@ class MainActivity : ComponentActivity() {
 //                else {
 //                    MySplashScreen()
 //                }
-            }
-        }
-    }
-
-    fun createOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .followRedirects(true) // Включить следование за редиректами (по умолчанию true)
-            .followSslRedirects(true) // Включить следование за SSL-редиректами (по умолчанию true)
-            .connectTimeout(30, TimeUnit.SECONDS) // Таймаут подключения
-            .readTimeout(30, TimeUnit.SECONDS) // Таймаут чтения
-            .writeTimeout(30, TimeUnit.SECONDS) // Таймаут записи
-            .build()
-    }
-
-    val url =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKFNb6bCwxzY0SQ5l_fENfzo82WQ9K85yz8pg-98AmN5CX3gT8M7H8XcMVvpcuduTkKjlOwfUzX6MZ/pub?gid=0&single=true&output=csv"
-
-
-    private suspend fun fetchUrlFromServer(): String {
-        return withContext(Dispatchers.IO) {
-            try {
-                val client = createOkHttpClient()
-                val request = Request.Builder()
-                    .url(url) // Замените на реальный URL
-                    .build()
-
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val body = response.body?.string()
-                    println("xxx " + body)
-                    body ?: ""
-
-                } else {
-                    ""
-                }
-            } catch (e: Exception) {
-                println("xxx $e")
-                Screen.Home.url
             }
         }
     }

@@ -70,6 +70,9 @@ fun WebViewScreen(url: String) {
 //    }
 
     BackHandler(enabled = true) {
+
+        println("Current page: ${webView?.url} $isFullscreen")
+
         if (isFullscreen) {
             webView?.evaluateJavascript(
                 "document.exitFullscreen && document.exitFullscreen();",
@@ -318,6 +321,9 @@ fun WebViewScreen(url: String) {
                     factory = { context ->
                         SwipeRefreshLayout(context).apply {
                             val onLoadingChange: (Boolean) -> Unit = { loading ->
+
+
+
                                 isLoading = loading
                                 isRefreshing = false
                             }
