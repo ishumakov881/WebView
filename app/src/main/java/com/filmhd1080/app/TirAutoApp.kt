@@ -1,6 +1,11 @@
-package com.knopka.kz;
+package com.filmhd1080.app;
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.onesignal.OneSignal
 import com.onesignal.OneSignal.initWithContext
 import io.appmetrica.analytics.AppMetrica
@@ -9,11 +14,15 @@ import io.appmetrica.analytics.push.AppMetricaPush
 
 class TirAutoApp : Application() {
 
-    //private static final String API_APPMETRICA_KEY = "6cb8d743-5912-42dc-a4fd-028e664df4e3";
+
+
 
     override fun onCreate() {
         super.onCreate()
-        if (!android.text.TextUtils.isEmpty(ONE_SIGNAL)) {
+
+
+
+        if (ONE_SIGNAL.isNotEmpty()) {
             // OneSignal Initialization
 //            OneSignal.startInit(this)
 //                    .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
@@ -25,8 +34,12 @@ class TirAutoApp : Application() {
             // OneSignal Initialization
 
             initWithContext(this, ONE_SIGNAL)
+
             // Enable verbose OneSignal logging to debug issues if needed.
             OneSignal.Debug.logLevel = com.onesignal.debug.LogLevel.VERBOSE
+
+
+
 
             //OneSignal.setLogLevel(OneSignal.LOG_LEVEL.DEBUG, OneSignal.LOG_LEVEL.DEBUG);
 //            DLog.d("OneSignal Initialization");
@@ -60,8 +73,8 @@ class TirAutoApp : Application() {
 //                }
 //            }
 
-            var id: kotlin.String = OneSignal.User.onesignalId
-            println("@@@@@@@@@@" + id)
+            var id: String = OneSignal.User.onesignalId
+            println("@@@@@@@@@@www" + id)
         }
 
 
@@ -90,8 +103,10 @@ class TirAutoApp : Application() {
     //7c793af0-4784-4681-95fd-c07bb06cf15c
     //c651c4ff-d29e-4d9b-8601-a971c2e4711d
     companion object {
-        private const val ONE_SIGNAL: kotlin.String = "5b807064-3a4d-4001-b062-e672e7ffbb07"
-        private const val API_APPMETRICA_KEY: kotlin.String = "652064c7-8614-4e27-9069-ced991faf345"
+        private const val ONE_SIGNAL: String = "5b807064-3a4d-4001-b062-e672e7ffbb07"
+        //ME ME ME @@ private const val ONE_SIGNAL: String = "b7ee58fd-ac54-4a6b-a28d-782a67de1672"
+
+        private const val API_APPMETRICA_KEY: String = "652064c7-8614-4e27-9069-ced991faf345"
 
     }
 }

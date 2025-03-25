@@ -21,24 +21,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
-import com.knopka.kz.navigation.Screen
-import com.knopka.kz.repository.GoogleSpreadheetsRepository
 
-import com.knopka.kz.ui.components.WebViewScreen1
-import com.knopka.kz.ui.screens.MySplashScreen
+import com.knopka.kz.navigation.Screen
+import com.knopka.kz.repository.LocalRepository
+
+
 import com.knopka.kz.ui.screens.WebViewScreen
 import com.knopka.kz.ui.theme.KnopkaTheme
-import kotlinx.coroutines.Dispatchers
+
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.TimeUnit
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +41,9 @@ class MainActivity : ComponentActivity() {
                 var url: String by remember { mutableStateOf<String>(""/*Screen.Home.url*/) }
 
                 LaunchedEffect(Unit) {
-                    val repository = GoogleSpreadheetsRepository()
+                    val repository = LocalRepository()
+
+
                     launch {
                         url = repository.fetchUrlFromGoogleDrive() ?: Screen.Home.url
                     }

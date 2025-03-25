@@ -84,7 +84,9 @@ fun WebViewScreen1() {
 
                 // Загружаем локальную HTML страницу из assets
                 //loadUrl("file:///android_asset/index.html")
-                loadUrl("https://fhd1080apk.cyou")
+                //loadUrl("https://fhd1080apk.cyou")
+                loadUrl("http://10.0.20.179:5173/search")
+
 
             }
         }

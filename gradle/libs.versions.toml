@@ -1,6 +1,6 @@
 [versions]
 accompanistSwiperefresh = "0.32.0"
-agp = "8.7.3"
+agp = "8.9.0"
 coilNetworkKtor2 = "3.0.4"
 coilNetworkKtor3 = "3.0.4"
 firebaseCrashlytics = "19.4.0"

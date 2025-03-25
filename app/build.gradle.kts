@@ -112,7 +112,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
@@ -143,7 +143,9 @@ dependencies {
     implementation(libs.coil.network.ktor3)
 
     implementation(libs.firebase.messaging)
+    //implementation(libs.onesignal)
     implementation(libs.onesignal)
+    implementation("com.onesignal:OneSignal:[5.0.0, 5.99.99]")
 
 //    implementation(libs.google.firebase.crashlytics)
 //    implementation(libs.firebase.crashlytics)

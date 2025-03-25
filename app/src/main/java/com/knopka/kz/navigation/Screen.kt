@@ -2,7 +2,11 @@ package com.knopka.kz.navigation
 
 //http://10.0.59.120:5173/search
 sealed class Screen(val route: String, val url: String) {
-    object Home : Screen("home", "https://fhd1080apk.cyou")
+    //object Home : Screen("home", "https://fhd1080apk.cyou")
+
+    object Home : Screen("home", "http://10.0.20.179:5173/search")
+
+
     //object Home : Screen("home", "file:///android_asset/viewport.html")
 
 
