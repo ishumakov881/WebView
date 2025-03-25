@@ -14,10 +14,11 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient.FileChooserParams
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.lds.webview.BuildConfig
 import com.walhalla.landing.activity.DLog.d
 import com.walhalla.landing.activity.DLog.handleException
-import com.walhalla.webview.BuildConfig
-import com.walhalla.webview.MyWebChromeClient
+
+import com.walhalla.webview.FullscreenWebChromeClient
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -25,7 +26,7 @@ import java.util.Date
 
 abstract class BaseWPresenter(protected val activity: AppCompatActivity) :
 
-    WPresenter, MyWebChromeClient.Callback {
+    WPresenter, FullscreenWebChromeClient.Callback {
     protected var mUploadMessage: ValueCallback<Uri?>? = null
     protected var mUploadMessages: ValueCallback<Array<Uri>>? = null
     private var mCapturedImageURI: Uri? = null

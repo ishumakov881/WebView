@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="download_file_types">1</string-array>
+
+    <string-array name="links_opened_in_external_browser">
+        <item>target=blank</item>
+        <item>target=external</item>
+        <item>play.google.com/store</item>
+        <item>youtube.com/watch</item>
+        <item>privacy.pdf</item>
+        <!--        <item>vk.com</item>-->
+        <item>apps.rustore.ru</item>
+        <item>https://api.whatsapp.com/send?text=</item>
+        <item>https://t.me/share/url</item>
+        <item tools:ignore="Typos">https://connect.ok.ru/offer?</item>
+        <item tools:ignore="Typos">https://twitter.com/intent/tweet</item>
+        <item tools:ignore="Typos">https://yandex.ru/chat?</item>
+        <item tools:ignore="Typos">https://vk.com/share.php</item>
+        <item tools:ignore="Typos">https://web.skype.com/share</item>
+
+
+    </string-array>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "456338040535",
+    "project_id": "fhd1080apk",
+    "storage_bucket": "fhd1080apk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456338040535:android:3dd0c440b6e13c5164f292",
+        "android_client_info": {
+          "package_name": "com.filmhd1080.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXmrP-b-7GcRHmQX-i2aCTP4JWaRkwymc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

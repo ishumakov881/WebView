@@ -1,16 +1,16 @@
 pluginManagement {
     repositories {
         google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
+//            content {
+//                includeGroupByRegex("com\\.android.*")
+//                includeGroupByRegex("com\\.google.*")
+//                includeGroupByRegex("androidx.*")
+//            }
         }
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        jcenter()
+        //jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -20,7 +20,7 @@ dependencyResolutionManagement {
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        jcenter()
+        //jcenter()
     }
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -30,5 +30,6 @@ include(":app")
 include(":wvcore")
 include(":wvrss")
 
-include(":features:webview")
-project(":features:webview").projectDir = File("D:\\walhalla\\sdk\\android\\ui\\features\\webview")
+//include(":features:webview")
+//project(":features:webview").projectDir = File("G:\\android\\Landing\\features\\webview")
+include(":testtest")

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "794079213108",
+    "project_id": "knopka-99bd3",
+    "storage_bucket": "knopka-99bd3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794079213108:android:42c60a5395ffa66b09fc61",
+        "android_client_info": {
+          "package_name": "com.knopka.kz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWj_VCpw9327zAX7ChXIiVxMJfpHyC_Ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794079213108:android:e471aea405272e4509fc61",
+        "android_client_info": {
+          "package_name": "com.knopka.kz.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWj_VCpw9327zAX7ChXIiVxMJfpHyC_Ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

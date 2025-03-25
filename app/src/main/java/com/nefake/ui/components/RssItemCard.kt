@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.nefake.data.model.RssItem
+import com.nefake.wvrss.model.RssItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

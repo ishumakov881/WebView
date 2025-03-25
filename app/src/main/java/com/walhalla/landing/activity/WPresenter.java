@@ -1,11 +1,10 @@
 package com.walhalla.landing.activity;
 
 import android.content.Intent;
-import android.widget.RelativeLayout;
 
-import androidx.appcompat.UWView;
 
 import com.walhalla.webview.ChromeView;
+import com.walhalla.webview.UWView;
 
 public interface WPresenter {
 

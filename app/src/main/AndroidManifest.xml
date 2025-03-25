@@ -5,15 +5,16 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />-->
-<!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />-->
+    <!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
     <!-- permissions for push notifications, uncomment if you want to use push notifications -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".TirAutoApp"
+        android:name="com.filmhd1080.app.TirAutoApp"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -23,11 +24,11 @@
         android:theme="@style/Theme.WebView"
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
-
+        <!--        android:screenOrientation="portrait"-->
         <activity
             android:name=".ui.MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.WebView"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity">
@@ -49,6 +50,16 @@
 
             <data android:scheme="https" />
         </intent>
-    </queries>
 
+        <!-- Разрешение для проверки Telegram -->
+<!--        <package android:name="org.telegram.messenger" />-->
+
+<!--        &lt;!&ndash; Разрешение для открытия ссылок в браузере &ndash;&gt;-->
+<!--        <intent>-->
+<!--            <action android:name="android.intent.action.VIEW" />-->
+<!--            <category android:name="android.intent.category.BROWSABLE" />-->
+<!--            <data android:scheme="http" />-->
+<!--            <data android:scheme="https" />-->
+<!--        </intent>-->
+    </queries>
 </manifest> 

@@ -12,20 +12,23 @@ import android.os.Message
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import com.lds.webview.BuildConfig
+import com.lds.wvrss.ui.CustomWebViewClient
 import com.walhalla.landing.activity.BaseWPresenter
 import com.walhalla.landing.activity.DLog
-import com.walhalla.webview.BuildConfig
+
 import com.walhalla.webview.ChromeView
-import com.walhalla.webview.CustomWebViewClient
-import com.walhalla.webview.MyWebChromeClient
-import com.walhalla.webview.ReceivedError
-import com.walhalla.webview.utility.ActivityUtils
+
+import com.walhalla.webview.FullscreenWebChromeClient
+import com.walhalla.webview.UWView
 import java.io.File
 import java.io.IOException
 
@@ -47,8 +50,18 @@ object WebViewCache {
         context: Context,
 
         isFirstLoad: (Boolean) -> Unit,
-        chromView: ChromeView
+        chromView: ChromeView,
+
+
+        onEnterFullscreen: (View) -> Unit,
+        onExitFullscreen: () -> Unit
+
     ): WebView {
+
+
+
+        val SESSION_NAME = "113"
+
 
         println("@@@${cache.size}")
         val isFromCache = cache.containsKey(url)
@@ -62,7 +75,9 @@ object WebViewCache {
         }
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        val chromeClient = object : MyWebChromeClient(object : Callback {
+        val chromeClient = object : FullscreenWebChromeClient(object : Callback {
+
+
             override fun onProgressChanged(progress: Int) {
                 println("@@@@$progress")
             }
@@ -81,6 +96,14 @@ object WebViewCache {
                 mUploadMessages = filePathCallback
                 DLog.d("@mUploadMessages@$mUploadMessages")
                 openImageChooser()
+            }
+
+            override fun onEnterFullscreen(view: View) {
+                onEnterFullscreen(view)
+            }
+
+            override fun onExitFullscreen() {
+                onExitFullscreen()
             }
 
             private fun openImageChooser() {
@@ -161,53 +184,62 @@ object WebViewCache {
         return cache.getOrPut(url) {
 
 
-            WebView(context).apply {
+            UWView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, // Ширина
+                    ViewGroup.LayoutParams.MATCH_PARENT  // Высота
+                )
                 val wv = this
 
                 configureWebView(wv)
                 val client = object : CustomWebViewClient(
-                    wv,  // передаем текущий WebView
+                    sessionName = SESSION_NAME,
+                    mView = wv,  // передаем текущий WebView
                     chromeView = chromView,
                     context = context
                 ) {
 
 
-                    override fun onLoadResource(view: WebView?, url: String?) {
-                        super.onLoadResource(view, url)
-                        // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
-//                            if (isFirstLoad) {
-//                                isFirstLoad = false
-//                            }
-//                            onLoadingChange(false)
-//                        }
-                    }
+//                    override fun onLoadResource(view: WebView?, url: String?) {
+//                        super.onLoadResource(view, url)
+//                        // Хак: если прошло больше 1 секунды - скрываем прогресс
+////                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
+////                            if (isFirstLoad) {
+////                                isFirstLoad = false
+////                            }
+////                            onLoadingChange(false)
+////                        }
+//                    }
 
                 }
 
                 webViewClient = client
                 webChromeClient = chromeClient
-                loadUrl(url)
+
+                if(!isFromCache){
+                    loadUrl(url)
+                }
             }
         }.also { webView ->
 
 
             val client = object : CustomWebViewClient(
+                sessionName = SESSION_NAME,
                 webView,
                 chromeView = chromView, context = context
             ) {
 
 
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-//                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-//                        if (isFirstLoad) {
-//                            isFirstLoad = false
-//                        }
-//                        onLoadingChange(false)
-//                    }
-                }
+//                override fun onLoadResource(view: WebView?, url: String?) {
+//                    super.onLoadResource(view, url)
+////                    // Хак: если прошло больше 1 секунды - скрываем прогресс
+////                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
+////                        if (isFirstLoad) {
+////                            isFirstLoad = false
+////                        }
+////                        onLoadingChange(false)
+////                    }
+//                }
 
             }
             webView.webViewClient = client
