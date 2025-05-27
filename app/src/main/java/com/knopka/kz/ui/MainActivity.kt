@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             KnopkaTheme {
                 var url: String by remember { mutableStateOf<String>(""/*Screen.Home.url*/) }
 
-<<<<<<< HEAD
+
                 LaunchedEffect(Unit) {
                     val repository = LocalRepository()
 
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 //                else {
 //                    MySplashScreen()
 //                }
-=======
+
 //                val openFullDialogCustom = remember { mutableStateOf(false) }
 //
 //                // A surface container using the 'background' color from the theme
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                 //...............................................................................
                 //Full screen Custom Dialog Sample
                 //NoInternetScreen(openFullDialogCustom)
->>>>>>> 0623d9d (Swipe Fixed..)
+
             }
         }
     }

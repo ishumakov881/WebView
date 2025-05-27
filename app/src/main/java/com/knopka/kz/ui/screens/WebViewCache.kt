@@ -30,7 +30,7 @@ import com.walhalla.webview.ChromeView
 
 
 import com.walhalla.webview.FullscreenWebChromeClient
-import com.walhalla.webview.MyWebChromeClient
+
 import com.walhalla.webview.UWView
 
 //import com.walhalla.webview.CustomWebViewClient
