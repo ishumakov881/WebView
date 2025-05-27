@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
             KnopkaTheme {
                 var url: String by remember { mutableStateOf<String>(""/*Screen.Home.url*/) }
 
+<<<<<<< HEAD
                 LaunchedEffect(Unit) {
                     val repository = LocalRepository()
 
@@ -55,6 +56,37 @@ class MainActivity : ComponentActivity() {
 //                else {
 //                    MySplashScreen()
 //                }
+=======
+//                val openFullDialogCustom = remember { mutableStateOf(false) }
+//
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(20.dp)
+//                            .verticalScroll(rememberScrollState())
+//                    ) {
+//
+//                        //...................................................................
+//                        // * full screen custom dialog
+//                        Button(
+//                            onClick = {
+//                                openFullDialogCustom.value = true
+//                            },
+//                            modifier = Modifier.align(Alignment.CenterHorizontally)
+//                        ) {
+//                            Text(text = "No internet",style = MaterialTheme.typography.labelLarge)
+//                        }
+//                    }
+//                }
+                //...............................................................................
+                //Full screen Custom Dialog Sample
+                //NoInternetScreen(openFullDialogCustom)
+>>>>>>> 0623d9d (Swipe Fixed..)
             }
         }
     }

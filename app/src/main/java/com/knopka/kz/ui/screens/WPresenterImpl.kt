@@ -14,11 +14,16 @@
 //import android.webkit.CookieManager
 //import android.webkit.PermissionRequest
 //import android.webkit.ValueCallback
+<<<<<<< HEAD
+=======
+//import android.webkit.WebChromeClient
+>>>>>>> 0623d9d (Swipe Fixed..)
 //import android.webkit.WebSettings
 //import android.webkit.WebView
 //import android.webkit.WebView.WebViewTransport
 //import android.webkit.WebViewClient
 //import androidx.activity.result.ActivityResult
+<<<<<<< HEAD
 //import androidx.appcompat.app.AlertDialog
 //import androidx.appcompat.app.AppCompatActivity
 //import androidx.fragment.app.DialogFragment
@@ -48,6 +53,36 @@
 //    var j: Int = 0
 //
 //    private val myWebChromeClient = object : FullscreenWebChromeClient(this@WPresenterImpl) {
+=======
+//import androidx.appcompat.UWView
+//import androidx.appcompat.app.AlertDialog
+//import androidx.appcompat.app.AppCompatActivity
+//import androidx.fragment.app.DialogFragment
+//import com.walhalla.landing.activity.BaseWPresenter
+//import com.walhalla.landing.activity.DLog.d
+//import com.walhalla.webview.BuildConfig
+//import com.walhalla.webview.ChromeView
+//import com.walhalla.webview.CustomWebViewClient
+//import com.walhalla.webview.MyWebChromeClient
+//import java.io.File
+//
+//class WPresenterImpl(
+//    handler: Handler?,
+//    activity: AppCompatActivity /*, WebActivityInterface webActivity*/
+//) :
+//    BaseWPresenter(activity), MyWebChromeClient.Callback {
+//    //private final WebActivityInterface webActivity;
+//    //protected ActivityResultLauncher<Intent> requestSelectFileLauncher0;
+//    //protected ActivityResultLauncher<Intent> requestFileChooser;
+//    protected var uploadMessage: ValueCallback<Array<Uri>>? = null
+//    private var var0: CustomWebViewClient? = null
+//
+//
+//    private var mPermissionRequest: PermissionRequest? = null
+//    var j: Int = 0
+//
+//    private val myWebChromeClient = object : MyWebChromeClient(this@WPresenterImpl) {
+>>>>>>> 0623d9d (Swipe Fixed..)
 //
 //        override fun onPermissionRequest(request: PermissionRequest) {
 //            //mPermissionRequest = request;
@@ -241,8 +276,11 @@
 ////        mPermissionRequest = null;
 //    }
 //
+<<<<<<< HEAD
 //
 //
+=======
+>>>>>>> 0623d9d (Swipe Fixed..)
 //    //    public void openImageChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
 //    //        if (uploadMessage != null) {
 //    //            uploadMessage.onReceiveValue(null);
@@ -366,6 +404,7 @@
 //    //            mUploadMessage = null;
 //    //        }
 //    //    }
+<<<<<<< HEAD
 ////    fun loadUrlWithClearHistory(mView: UWView, s: String) {
 ////        mView.stopLoading()
 ////        mView.clearHistory()
@@ -375,6 +414,17 @@
 ////        var0!!.setHomeUrl(s)
 ////        mView.loadUrl(s)
 ////    }
+=======
+//    fun loadUrlWithClearHistory(mView: UWView, s: String) {
+//        mView.stopLoading()
+//        mView.clearHistory()
+//        mView.loadUrl("about:blank")
+//        //mView.loadUrl("file:///android_asset/infAppPaused.html");
+//        var0!!.resetAllErrors()
+//        var0!!.setHomeUrl(s)
+//        mView.loadUrl(s)
+//    }
+>>>>>>> 0623d9d (Swipe Fixed..)
 //
 //    private fun alert(result: ActivityResult, selectedFiles: Array<Uri>?, context: Context) {
 //        val intent = result.data
@@ -403,6 +453,20 @@
 //    override fun onProgressChanged(progress: Int) {
 //    }
 //
+<<<<<<< HEAD
+=======
+//    override fun openFileChooser(uploadMsg: ValueCallback<Uri>, s: String?) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openFileChooser(
+//        filePathCallback: ValueCallback<Array<Uri>>,
+//        fileChooserParams: WebChromeClient.FileChooserParams?
+//    ) {
+//        TODO("Not yet implemented")
+//    }
+//
+>>>>>>> 0623d9d (Swipe Fixed..)
 //
 //    private fun captureImageUri(): Uri {
 //        val imageStorageDir = File(

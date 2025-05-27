@@ -350,8 +350,27 @@ fun WebViewScreen(url: String) {
                                     switchViews = true
                                 }
 
+<<<<<<< HEAD
                                 override fun openBrowser(url: String) {
                                     ActivityUtils.openBrowser(context, url)
+=======
+                        }
+                        val cachedWebView = WebViewCache.get(
+                            url, context,
+                            //, client
+                            chromeView = chromView,
+                            isFirstLoad = {
+                                println("@@@$it")
+                                isFirstLoad = it
+                                if (isFirstLoad) {
+                                    loadingStartTime = System.currentTimeMillis()
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        if (isFirstLoad) {
+                                            isFirstLoad = false
+                                            onLoadingChange(false)
+                                        }
+                                    }, 2000)
+>>>>>>> 0623d9d (Swipe Fixed..)
                                 }
                             }
 
