@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -61,7 +62,65 @@ object WebViewCache {
         }
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        val chromeClient = object : MyWebChromeClient(context, chromeView, object : Callback {
+
+
+        return cache.getOrPut(url) {
+
+
+            WebView(context).apply {
+                val wv = this
+
+                configureWebView(wv)
+                val client = object : CustomWebViewClient(
+                    wv,  // передаем текущий WebView
+                    chromeView = chromeView,
+                    context = context
+                ) {
+
+
+                    override fun onLoadResource(view: WebView?, url: String?) {
+                        super.onLoadResource(view, url)
+                        // Хак: если прошло больше 1 секунды - скрываем прогресс
+//                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
+//                            if (isFirstLoad) {
+//                                isFirstLoad = false
+//                            }
+//                            onLoadingChange(false)
+//                        }
+                    }
+
+                }
+
+                webViewClient = client
+                webChromeClient = chromeClient(context, wv)
+                loadUrl(url)
+            }
+        }.also { webView ->
+
+            val client = object : CustomWebViewClient(webView,
+                chromeView = chromeView, context = context
+            ) {
+
+
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+//                    // Хак: если прошло больше 1 секунды - скрываем прогресс
+//                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
+//                        if (isFirstLoad) {
+//                            isFirstLoad = false
+//                        }
+//                        onLoadingChange(false)
+//                    }
+                }
+
+            }
+            webView.webViewClient = client
+            webView.webChromeClient = chromeClient(context, webView)  // Используем тот же объект
+        }
+    }
+
+    private fun chromeClient(context: Activity, wv: WebView): WebChromeClient {
+        val chromeClient = object : MyWebChromeClient(context, wv, object : Callback {
             override fun onProgressChanged(progress: Int) {
                 println("@@@@$progress")
             }
@@ -156,62 +215,7 @@ object WebViewCache {
                 return true
             }
         }
-
-        return cache.getOrPut(url) {
-
-
-            WebView(context).apply {
-                val wv = this
-
-                configureWebView(wv)
-                val client = object : CustomWebViewClient(
-                    wv,  // передаем текущий WebView
-                    chromeView = chromeView,
-                    context = context
-                ) {
-
-
-                    override fun onLoadResource(view: WebView?, url: String?) {
-                        super.onLoadResource(view, url)
-                        // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                        if (System.currentTimeMillis() - loadingStartTime > 2_000) {
-//                            if (isFirstLoad) {
-//                                isFirstLoad = false
-//                            }
-//                            onLoadingChange(false)
-//                        }
-                    }
-
-                }
-
-                webViewClient = client
-                webChromeClient = chromeClient
-                loadUrl(url)
-            }
-        }.also { webView ->
-
-
-            val client = object : CustomWebViewClient(
-                webView,
-                chromeView = chromeView, context = context
-            ) {
-
-
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-//                    // Хак: если прошло больше 1 секунды - скрываем прогресс
-//                    if (System.currentTimeMillis() - loadingStartTime > 1_000) {
-//                        if (isFirstLoad) {
-//                            isFirstLoad = false
-//                        }
-//                        onLoadingChange(false)
-//                    }
-                }
-
-            }
-            webView.webViewClient = client
-            webView.webChromeClient = chromeClient  // Используем тот же объект
-        }
+        return chromeClient
     }
 
     fun clear() {

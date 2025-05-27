@@ -26,7 +26,7 @@ import java.util.Date
 abstract class BaseWPresenter(protected val activity: AppCompatActivity) :
 
     WPresenter, MyWebChromeClient.Callback {
-    protected var mUploadMessage: ValueCallback<Uri?>? = null
+    protected var mUploadMessage: ValueCallback<Uri>? = null
     protected var mUploadMessages: ValueCallback<Array<Uri>>? = null
     private var mCapturedImageURI: Uri? = null
 
@@ -35,14 +35,13 @@ abstract class BaseWPresenter(protected val activity: AppCompatActivity) :
     }
 
 
-    override fun openFileChooser(uploadMsg: ValueCallback<Uri?>?, acceptType: String?) {
+    override fun openFileChooser(uploadMsg: ValueCallback<Uri>, acceptType: String?) {
         mUploadMessage = uploadMsg
         d("@mUploadMessage@$mUploadMessage")
         openImageChooser()
     }
 
-    override fun openFileChooser(
-        filePathCallback: ValueCallback<Array<Uri>>?,
+    override fun openFileChooser(filePathCallback: ValueCallback<Array<Uri>>,
         fileChooserParams: FileChooserParams?
     ) {
         mUploadMessages = filePathCallback

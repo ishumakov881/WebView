@@ -47,6 +47,7 @@ fun WebViewScreen(url: String) {
     var webView by remember { mutableStateOf<WebView?>(null) }
 
     val context = LocalContext.current
+    val activity = context as Activity
 
     // Регистрируем launcher для выбора файла
     val fileChooserLauncher = rememberLauncherForActivityResult(
@@ -162,7 +163,7 @@ fun WebViewScreen(url: String) {
 
                         }
                         val cachedWebView = WebViewCache.get(
-                            url, context,
+                            url, activity,
                             //, client
                             chromeView = chromView,
                             isFirstLoad = {
