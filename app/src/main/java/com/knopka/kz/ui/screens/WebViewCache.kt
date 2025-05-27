@@ -1,6 +1,7 @@
 package com.knopka.kz.ui.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -24,15 +25,13 @@ import com.walhalla.webview.BuildConfig
 import com.walhalla.webview.ChromeView
 import com.walhalla.webview.CustomWebViewClient
 import com.walhalla.webview.MyWebChromeClient
-import com.walhalla.webview.ReceivedError
-import com.walhalla.webview.utility.ActivityUtils
 import java.io.File
 import java.io.IOException
 
 object WebViewCache {
 
 
-    var mUploadMessage: ValueCallback<Uri?>? = null
+    var mUploadMessage: ValueCallback<Uri>? = null
     var mUploadMessages: ValueCallback<Array<Uri>>? = null
     var mCapturedImageURI: Uri? = null
 
@@ -44,10 +43,10 @@ object WebViewCache {
 
     fun get(
         url: String,
-        context: Context,
+        context: Activity,
 
         isFirstLoad: (Boolean) -> Unit,
-        chromView: ChromeView
+        chromeView: ChromeView
     ): WebView {
 
         println("@@@${cache.size}")
@@ -62,12 +61,12 @@ object WebViewCache {
         }
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        val chromeClient = object : MyWebChromeClient(object : Callback {
+        val chromeClient = object : MyWebChromeClient(context, chromeView, object : Callback {
             override fun onProgressChanged(progress: Int) {
                 println("@@@@$progress")
             }
 
-            override fun openFileChooser(uploadMsg: ValueCallback<Uri?>?, s: String?) {
+            override fun openFileChooser(uploadMsg: ValueCallback<Uri>, s: String?) {
                 mUploadMessage = uploadMsg
                 DLog.d("@mUploadMessage@$mUploadMessage")
                 openImageChooser()
@@ -75,7 +74,7 @@ object WebViewCache {
 
 
             override fun openFileChooser(
-                filePathCallback: ValueCallback<Array<Uri>>?,
+                filePathCallback: ValueCallback<Array<Uri>>,
                 fileChooserParams: FileChooserParams?
             ) {
                 mUploadMessages = filePathCallback
@@ -167,7 +166,7 @@ object WebViewCache {
                 configureWebView(wv)
                 val client = object : CustomWebViewClient(
                     wv,  // передаем текущий WebView
-                    chromeView = chromView,
+                    chromeView = chromeView,
                     context = context
                 ) {
 
@@ -194,7 +193,7 @@ object WebViewCache {
 
             val client = object : CustomWebViewClient(
                 webView,
-                chromeView = chromView, context = context
+                chromeView = chromeView, context = context
             ) {
 
 

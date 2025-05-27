@@ -9,7 +9,7 @@
         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
-            <option value="D:/walhalla/sdk/android/ui/features/webview" />
+            <option value="C:/src/Synced/WalhallaUI/features/webview" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/features" />
@@ -17,7 +17,6 @@
             <option value="$PROJECT_DIR$/wvrss" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

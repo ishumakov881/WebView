@@ -31,36 +31,35 @@ class MainActivity : ComponentActivity() {
             KnopkaTheme {
                 KnopkaApp()
 
-                val openFullDialogCustom = remember { mutableStateOf(false) }
-
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-
-                        //...................................................................
-                        // * full screen custom dialog
-                        Button(
-                            onClick = {
-                                openFullDialogCustom.value = true
-                            },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(text = "No internet",style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
-                }
-
+//                val openFullDialogCustom = remember { mutableStateOf(false) }
+//
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(20.dp)
+//                            .verticalScroll(rememberScrollState())
+//                    ) {
+//
+//                        //...................................................................
+//                        // * full screen custom dialog
+//                        Button(
+//                            onClick = {
+//                                openFullDialogCustom.value = true
+//                            },
+//                            modifier = Modifier.align(Alignment.CenterHorizontally)
+//                        ) {
+//                            Text(text = "No internet",style = MaterialTheme.typography.labelLarge)
+//                        }
+//                    }
+//                }
                 //...............................................................................
                 //Full screen Custom Dialog Sample
-                NoInternetScreen(openFullDialogCustom)
+                //NoInternetScreen(openFullDialogCustom)
             }
         }
     }

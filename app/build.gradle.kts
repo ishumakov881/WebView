@@ -97,17 +97,17 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.androidx.material3)
+    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
@@ -118,9 +118,9 @@ dependencies {
     implementation(libs.transport.api)
 
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2025.01.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -134,11 +134,11 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.coil.compose)
-    implementation("io.coil-kt.coil3:coil-network-ktor2:3.0.4")
-    implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.4")
+    //implementation("io.coil-kt.coil3:coil-network-ktor2:3.1.0")
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.firebase.messaging)
     implementation(libs.onesignal)
-
-    implementation("com.google.firebase:firebase-crashlytics:19.4.0")
+    implementation(libs.accompanist.webview)
+    implementation(libs.google.firebase.crashlytics)
 } 
