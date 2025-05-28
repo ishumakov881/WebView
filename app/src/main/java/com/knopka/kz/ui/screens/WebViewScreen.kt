@@ -32,9 +32,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.walhalla.landing.activity.DLog.d
 import android.os.Handler
 import android.os.Looper
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
+import com.knopka.kz.ui.WebViewControls
 
 @Composable
-fun WebViewScreen(url: String) {
+fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -48,6 +52,34 @@ fun WebViewScreen(url: String) {
 
     val context = LocalContext.current
     val activity = context as Activity
+
+
+
+    //val handler = rememberUpdatedState(onControlsChanged)
+
+    val updateControls: () -> Unit = {
+        webView?.let {
+            onControlsChanged(
+                WebViewControls(
+                    canGoBack = it.canGoBack(),
+                    canGoForward = it.canGoForward(),
+                    reload = { it.reload() },
+                    goBack = { if (it.canGoBack()) it.goBack() },
+                    goForward = { if (it.canGoForward()) it.goForward() }
+                )
+            )
+        }
+    }
+    DisposableEffect(Unit) {
+//        webView.webViewClient = object : WebViewClient() {
+//            override fun onPageFinished(view: WebView?, url: String?) {
+//
+//            }
+//        }
+        updateControls()
+        onDispose {}
+    }
+
 
     // Регистрируем launcher для выбора файла
     val fileChooserLauncher = rememberLauncherForActivityResult(
@@ -144,6 +176,7 @@ fun WebViewScreen(url: String) {
 
                             override fun onPageFinished(url: String?) {
                                 onLoadingChange(false)
+                                updateControls()
                             }
 
                             override fun webClientError(failure: ReceivedError) {

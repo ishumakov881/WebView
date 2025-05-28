@@ -14,8 +14,8 @@ plugins {
 
 fun generateVersion(): Pair<Int, String> {
     val major = 2  // Используем как buildNumber и первую цифру версии
-    val minor = 3  // Новые фичи
-    val patch = 10  // Фиксы
+    val minor = 4  // Новые фичи
+    val patch = 14  // Фиксы
 
     val date = LocalDate.now()
     val year = date.year % 100
@@ -29,6 +29,11 @@ fun generateVersion(): Pair<Int, String> {
 }
 
 android {
+
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     namespace = "com.knopka.kz"
     compileSdk = 35
 
@@ -101,7 +106,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -112,7 +117,7 @@ dependencies {
     implementation(project(":wvrss"))
 
     // SwipeRefreshLayout
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.firebase.crashlytics)
     implementation(project(":features:webview"))
     implementation(libs.transport.api)
