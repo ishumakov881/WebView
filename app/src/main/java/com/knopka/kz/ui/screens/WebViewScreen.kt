@@ -36,6 +36,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberUpdatedState
 import com.knopka.kz.ui.WebViewControls
+import androidx.core.net.toUri
 
 @Composable
 fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
@@ -113,7 +114,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
                                 clipData.getItemAt(i).uri
                             }
                         } else if (dataString != null) {
-                            results = arrayOf(Uri.parse(dataString))
+                            results = arrayOf(dataString.toUri())
                         }
                     }
                     if (results == null && WebViewCache.mCapturedImageURI != null) {

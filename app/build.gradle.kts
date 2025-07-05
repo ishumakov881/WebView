@@ -80,7 +80,7 @@ android {
 
     buildTypes {
 
-        getByName("debug"){
+        getByName("debug") {
             applicationIdSuffix = ".debug"
             //signingConfig = signingConfigs.getByName("config")
         }
@@ -104,6 +104,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -131,11 +132,13 @@ android {
         create("pozitiv") {
             dimension = "client"
             applicationId = "com.appbery.appberypositiverf"
-            versionNameSuffix = "-positiverf"
+            //versionNameSuffix = "-positiverf"
             resValue("string", "app_name", "Позитив")
             signingConfig = signingConfigs.getByName("pozitiv")
         }
     }
+
+
 }
 
 dependencies {
@@ -183,4 +186,6 @@ dependencies {
     implementation(libs.onesignal)
     implementation(libs.accompanist.webview)
     implementation(libs.google.firebase.crashlytics)
+
+    implementation("com.github.wiryadev:BootstrapIconsCompose:0.2.0")
 } 

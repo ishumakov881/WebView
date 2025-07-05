@@ -19,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.knopka.kz.ui.theme.KnopkaTheme
+import android.content.Context
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        saveFirstLaunchTimeIfNeeded()
         
         // Правильная обработка инсетов для edge-to-edge дизайна
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -61,6 +63,14 @@ class MainActivity : ComponentActivity() {
                 //Full screen Custom Dialog Sample
                 //NoInternetScreen(openFullDialogCustom)
             }
+        }
+    }
+
+    private fun saveFirstLaunchTimeIfNeeded() {
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        if (!prefs.contains("first_launch_time")) {
+            val now = System.currentTimeMillis()
+            prefs.edit().putLong("first_launch_time", now).apply()
         }
     }
 } 

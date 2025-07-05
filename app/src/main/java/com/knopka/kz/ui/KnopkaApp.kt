@@ -6,13 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,7 +19,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
 import androidx.compose.ui.Modifier
@@ -61,7 +56,7 @@ fun KnopkaApp() {
 
     //val refreshTriggers = remember { mutableStateMapOf<String, Boolean>() }
     val webViewControlsMap = remember { mutableStateMapOf<String, WebViewControls?>() }
-    val screenTitle = Screen.bottomNavItems.find { it.first.route == currentRoute }?.second ?: ""
+    val screenTitle = Screen.bottomNavItems.find { it.screen.route == currentRoute }?.label ?: ""
 
 
     Scaffold(
@@ -119,8 +114,8 @@ fun KnopkaApp() {
                             // Кнопка "Домой" когда нет backstack
                             IconButton(
                                 onClick = {
-                                    if (currentRoute != Screen.Home.route) {
-                                        navController.navigate(Screen.Home.route) {
+                                    if (currentRoute != Screen.HomeScreen.route) {
+                                        navController.navigate(Screen.HomeScreen.route) {
                                             popUpTo(navController.graph.startDestinationId)
                                         }
                                     }
@@ -140,7 +135,7 @@ fun KnopkaApp() {
                 ) else null
         },
         bottomBar = {
-            if (Screen.bottomNavItems.size > 1)
+            if (bottomNavItems.size > 1)
                 KnopkaBottomNavigation(
                     currentRoute = currentRoute,
                     onNavigate = { screen ->
@@ -169,23 +164,43 @@ fun KnopkaApp() {
 fun KnopkaNavHost(
     navController: NavHostController,
     webViewControlsMap: MutableMap<String, WebViewControls?>,
-    startDestination: String = Screen.Home.route
+    startDestination: String = Screen.HomeScreen.route
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
-        composable(Screen.Home.route) {
-            WebViewScreen(
-                url = Screen.Home.url,
-                onControlsChanged = { webViewControlsMap[Screen.Home.route] = it }
-            )
-        }
-//        bottomNavItems.forEach { screen ->
+
+        bottomNavItems.forEach { screen ->
+            when(screen.screen){
+                //Screen.AddItem -> {}
+                Screen.HomeScreen -> {
+                    composable(Screen.HomeScreen.route) {
+                        WebViewScreen(
+                            url = Screen.HomeScreen.url?:"",
+                            onControlsChanged = { webViewControlsMap[Screen.HomeScreen.route] = it }
+                        )
+                    }
+                }
+                Screen.NotificationsScreen -> {
+                    composable(Screen.NotificationsScreen.route) {
+                        com.knopka.kz.ui.screens.NotificationsScreen()
+                    }
+                }
+                Screen.ProfileScreen -> {
+                    composable(Screen.ProfileScreen.route) {
+                        com.knopka.kz.ui.screens.ProfileScreen(navController)
+                    }
+                }
+            }
+            // Экран 'О приложении'
+            composable("about") {
+                com.knopka.kz.ui.screens.AboutScreen(onBack = { navController.popBackStack() })
+            }
 //            composable(screen.first.route) {
 //                WebViewScreen(
 //                    url = screen.first.url,
 //                    onControlsChanged = { webViewControlsMap[screen.first.route] = it }
 //                )
 //            }
-//        }
+        }
 //        composable(Screen.AddItem.route) {
 //            WebViewScreen(
 //                url = Screen.AddItem.url,

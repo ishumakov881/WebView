@@ -1,5 +1,6 @@
 package com.knopka.kz.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Add
@@ -12,7 +13,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.knopka.kz.R
 import com.knopka.kz.navigation.Screen
 
@@ -21,39 +24,19 @@ fun KnopkaBottomNavigation(
     currentRoute: String,
     onNavigate: (Screen) -> Unit
 ) {
-    NavigationBar {
-        Screen.bottomNavItems.forEach { (screen, title, icon) ->
+    NavigationBar(modifier = Modifier.height(68.dp)) {
+        Screen.bottomNavItems.forEach { item ->
             NavigationBarItem(
-                selected = currentRoute == screen.route,
-                onClick = { onNavigate(screen) },
+                selected = currentRoute == item.screen.route,
+                onClick = { onNavigate(item.screen) },
                 icon = {
                     Icon(
-                        imageVector = getIcon(icon),
-                        contentDescription = title
+                        imageVector = item.icon,
+                        contentDescription = item.label
                     )
                 },
-                label = { Text(text = title) }
+                //label = { Text(text = item.label) }
             )
         }
-    }
-}
-
-//private fun getDrawableResource(name: String): Int {
-//    return when (name) {
-//        "home" -> R.drawable.home
-//        "addchart" -> R.drawable.addchart
-//        "message" -> R.drawable.message
-//        "kabinet" -> R.drawable.kabinet
-//        else -> throw IllegalArgumentException("Unknown icon name: $name")
-//    }
-//}
-
-private fun getIcon(name: String): ImageVector {
-    return when (name) {
-        "home" -> Icons.Default.Home
-        "addchart" -> Icons.Default.Addchart
-        "message" -> Icons.AutoMirrored.Filled.Message
-        "kabinet" -> Icons.Default.Person
-        else -> throw IllegalArgumentException("Unknown icon name: $name")
     }
 }
