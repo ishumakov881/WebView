@@ -170,7 +170,7 @@ fun KnopkaNavHost(
 
         bottomNavItems.forEach { screen ->
             when(screen.screen){
-                //Screen.AddItem -> {}
+                Screen.AddItem -> {}
                 Screen.HomeScreen -> {
                     composable(Screen.HomeScreen.route) {
                         WebViewScreen(

@@ -63,7 +63,6 @@ object WebViewCache {
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-
         return cache.getOrPut(url) {
 
 
@@ -97,7 +96,8 @@ object WebViewCache {
             }
         }.also { webView ->
 
-            val client = object : CustomWebViewClient(webView,
+            val client = object : CustomWebViewClient(
+                webView,
                 chromeView = chromeView, context = context
             ) {
 
@@ -212,8 +212,28 @@ object WebViewCache {
                 transport.webView = newWebView
                 resultMsg.sendToTarget()
 
+                // Для VK - открываем в том же окне
+//                if (view.url?.contains("vk.com") == true) {
+//                    return false // Не создаём новое окно
+//                }
+                // Для остальных сайтов - стандартная логика
+                //return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg)
                 return true
             }
+
+
+            //isDialog => false
+            //<a class="top2_contakt_icon" href="https://vk.com/positivefoto" target="_blank">
+
+//            @SuppressLint("SetJavaScriptEnabled")
+//            override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message): Boolean {
+//                if(BuildConfig.DEBUG){
+//                    Toast.makeText(view.context, "isDialog: $isDialog, isUserGesture: $isUserGesture", Toast.LENGTH_LONG).show()
+//                }
+//                return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg)
+//            }
+
+
         }
         return chromeClient
     }

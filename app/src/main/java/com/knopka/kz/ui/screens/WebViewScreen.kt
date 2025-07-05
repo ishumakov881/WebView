@@ -55,7 +55,6 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
     val activity = context as Activity
 
 
-
     //val handler = rememberUpdatedState(onControlsChanged)
 
     val updateControls: () -> Unit = {
@@ -226,10 +225,10 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
                         }
                     }
                 },
-                update = { swipeRefresh ->
-                    //if (webView?.url != url) {
-                    webView?.loadUrl(url)
-                    //}
+                update = { swipeRefresh: SwipeRefreshLayout ->
+//                    if (webView?.url != url) {
+//                        if (!isFirstLoad) webView?.loadUrl(url)
+//                    }
                 },
                 modifier = Modifier.fillMaxSize()
             )

@@ -19,7 +19,7 @@ fun configureWebView(webView: WebView) {
         // JavaScript и DOM
         javaScriptEnabled = true
         domStorageEnabled = true
-        javaScriptCanOpenWindowsAutomatically = true
+
 
         // Зум и масштабирование
         builtInZoomControls = false
@@ -28,7 +28,12 @@ fun configureWebView(webView: WebView) {
         setGeolocationEnabled(true)
 
         // Множественные окна
-        setSupportMultipleWindows(true)
+        setSupportMultipleWindows(false)
+        javaScriptCanOpenWindowsAutomatically = false
+
+
+//        setSupportMultipleWindows(true)
+//        javaScriptCanOpenWindowsAutomatically = true
 
         // Доступ к файлам
         pluginState = WebSettings.PluginState.ON
