@@ -2,10 +2,10 @@ package com.knopka.kz.navigation
 
 //http://10.0.59.120:5173/search
 sealed class Screen(val route: String, val url: String) {
-    object Home : Screen("home", "https://knopka.kz/")
+    object Home : Screen("home", "https://позитивфото.рф")
     object AddItem : Screen("add_item", "https://knopka.kz/item/add")
-    object Messages : Screen("messages", "https://knopka.kz/cabinet/messages")
-    object Profile : Screen("profile", "https://knopka.kz/cabinet/items")
+//    object Messages : Screen("messages", "https://knopka.kz/cabinet/messages")
+//    object Profile : Screen("profile", "https://knopka.kz/cabinet/items")
     //https://youtube.com
 
     //https://fex.net/ru/s/nb1aona
@@ -30,8 +30,8 @@ sealed class Screen(val route: String, val url: String) {
         val bottomNavItems = listOf(
             Triple(Home, "Главная", "home"),
             Triple(AddItem, "Добавить", "addchart"),
-            Triple(Messages, "Сообщения", "message"),
-            Triple(Profile, "Кабинет", "kabinet")
+//            Triple(Messages, "Сообщения", "message"),
+//            Triple(Profile, "Кабинет", "kabinet")
         )
     }
 } 

@@ -35,7 +35,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.knopka.kz.R
 
+
 import com.knopka.kz.navigation.Screen
+import com.knopka.kz.navigation.Screen.Companion.bottomNavItems
 import com.knopka.kz.ui.components.KnopkaBottomNavigation
 import com.knopka.kz.ui.screens.WebViewScreen
 
@@ -47,6 +49,7 @@ data class WebViewControls(
     val goForward: () -> Unit
 )
 
+const val TOP_BAR_ENABLED = false
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,91 +66,96 @@ fun KnopkaApp() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(text = stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            text = screenTitle,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                },
-                actions = {
-                    // Общие действия для всех экранов
+            if (TOP_BAR_ENABLED)
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(
+                                text = stringResource(R.string.app_name),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                text = screenTitle,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    },
+                    actions = {
+                        // Общие действия для всех экранов
 //                    IconButton(onClick = {
 //                        refreshTriggers[currentRoute] = !(refreshTriggers[currentRoute] ?: false)
 //                    }) {
 //                        Icon(Icons.Default.Refresh, "Refresh")
 //                    }
-                    val controls = webViewControlsMap[currentRoute]
+                        val controls = webViewControlsMap[currentRoute]
 
 
-                    if (controls?.canGoBack == true) {
-                        IconButton(onClick = { controls.goBack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        if (controls?.canGoBack == true) {
+                            IconButton(onClick = { controls.goBack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                            }
                         }
-                    }
 
-                    if (controls?.canGoForward == true) {
-                        IconButton(onClick = { controls.goForward() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, "Forward")
+                        if (controls?.canGoForward == true) {
+                            IconButton(onClick = { controls.goForward() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowForward, "Forward")
+                            }
                         }
-                    }
 
-                    IconButton(onClick = { controls?.reload?.invoke() }) {
-                        Icon(Icons.Default.Refresh, "Refresh")
-                    }
-
-                },
-                navigationIcon = {
-                    if (showBackButton) {
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Back"
-                            )
+                        IconButton(onClick = { controls?.reload?.invoke() }) {
+                            Icon(Icons.Default.Refresh, "Refresh")
                         }
-                    } else {
-                        // Кнопка "Домой" когда нет backstack
-                        IconButton(
-                            onClick = {
-                                if (currentRoute != Screen.Home.route) {
-                                    navController.navigate(Screen.Home.route) {
-                                        popUpTo(navController.graph.startDestinationId)
+
+                    },
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(onClick = { navController.navigateUp() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Back"
+                                )
+                            }
+                        } else {
+                            // Кнопка "Домой" когда нет backstack
+                            IconButton(
+                                onClick = {
+                                    if (currentRoute != Screen.Home.route) {
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(navController.graph.startDestinationId)
+                                        }
                                     }
-                                }
 
-                            },
-                            //enabled =  Screen.Home.route!=currentRoute
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home"
-                            )
+                                },
+                                //enabled =  Screen.Home.route!=currentRoute
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = "Home"
+                                )
+                            }
                         }
                     }
-                }
 //                backgroundColor = MaterialTheme.colors.primary,
 //                elevation = 4.dp
-            )
+                ) else null
         },
         bottomBar = {
-            KnopkaBottomNavigation(
-                currentRoute = currentRoute,
-                onNavigate = { screen ->
-                    navController.navigate(screen.route) {
-                        // Очищаем бэкстек до выбранного экрана
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+            if (Screen.bottomNavItems.size > 1)
+                KnopkaBottomNavigation(
+                    currentRoute = currentRoute,
+                    onNavigate = { screen ->
+                        navController.navigate(screen.route) {
+                            // Очищаем бэкстек до выбранного экрана
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            // Избегаем дублирования экранов в стеке
+                            launchSingleTop = true
+                            // Восстанавливаем состояние при возврате
+                            restoreState = true
                         }
-                        // Избегаем дублирования экранов в стеке
-                        launchSingleTop = true
-                        // Восстанавливаем состояние при возврате
-                        restoreState = true
                     }
-                }
-            )
+                ) else null
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -170,24 +178,32 @@ fun KnopkaNavHost(
                 onControlsChanged = { webViewControlsMap[Screen.Home.route] = it }
             )
         }
-        composable(Screen.AddItem.route) {
-            WebViewScreen(
-                url = Screen.AddItem.url,
-                onControlsChanged = { webViewControlsMap[Screen.AddItem.route] = it }
-            )
-        }
-        composable(Screen.Messages.route) {
-            WebViewScreen(
-                url = Screen.Messages.url,
-                onControlsChanged = { webViewControlsMap[Screen.Messages.route] = it }
-            )
-        }
-        composable(Screen.Profile.route) {
-            WebViewScreen(
-                url = Screen.Profile.url,
-                onControlsChanged = { webViewControlsMap[Screen.Profile.route] = it }
-            )
-        }
+//        bottomNavItems.forEach { screen ->
+//            composable(screen.first.route) {
+//                WebViewScreen(
+//                    url = screen.first.url,
+//                    onControlsChanged = { webViewControlsMap[screen.first.route] = it }
+//                )
+//            }
+//        }
+//        composable(Screen.AddItem.route) {
+//            WebViewScreen(
+//                url = Screen.AddItem.url,
+//                onControlsChanged = { webViewControlsMap[Screen.AddItem.route] = it }
+//            )
+//        }
+//        composable(Screen.Messages.route) {
+//            WebViewScreen(
+//                url = Screen.Messages.url,
+//                onControlsChanged = { webViewControlsMap[Screen.Messages.route] = it }
+//            )
+//        }
+//        composable(Screen.Profile.route) {
+//            WebViewScreen(
+//                url = Screen.Profile.url,
+//                onControlsChanged = { webViewControlsMap[Screen.Profile.route] = it }
+//            )
+//        }
     }
 }
 

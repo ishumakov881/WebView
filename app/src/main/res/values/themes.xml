@@ -11,4 +11,14 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+<!--    <style name="Theme.WebView" parent="android:Theme.Material.Light.NoActionBar">-->
+    <style name="Theme.WebView" parent="android:Theme.Material.NoActionBar">
+
+        <item name="android:statusBarColor">#ea0093</item>
+
+        <!-- Цвет навигационного бара (нижние кнопки) -->
+        <item name="android:navigationBarColor">#ea0093</item>
+
+    </style>
 </resources> 

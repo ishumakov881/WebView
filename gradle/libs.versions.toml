@@ -1,33 +1,42 @@
 [versions]
+
+android-compileSdk = "36"
+android-minSdk = "21"
+android-targetSdk = "36"
+android-buildTools = "36.0.0"
+
 accompanistSwiperefresh = "0.32.0"
 accompanistWebview = "0.36.0"
-agp = "8.7.3"
+kotlin = "2.1.21"
+kotlintestRunnerJunit5 = "3.4.2"
+ksp = "2.1.21-2.0.1"
+agp = "8.8.2"
 coilNetworkKtor3 = "3.1.0"
-firebaseCrashlytics = "19.4.0"
-firebaseMessaging = "24.1.0"
-kotlin = "2.1.0"
-core-ktx = "1.15.0"
+firebaseCrashlytics = "19.4.4"
+firebaseMessaging = "24.1.2"
+
+core-ktx = "1.16.0"
 kotlinxCoroutinesAndroid = "1.10.2"
-lifecycle-runtime-ktx = "2.8.7"
-activity-compose = "1.9.3"
+lifecycle-runtime-ktx = "2.9.1"
+activity-compose = "1.10.1"
 compose-compiler = "1.5.8"
 compose-bom = "2024.04.01"
-lifecycleViewmodelCompose = "2.8.7"
-navigation-compose = "2.8.6"
+lifecycleViewmodelCompose = "2.9.1"
+navigation-compose = "2.9.1"
 hilt = "2.55"
 hilt-navigation-compose = "1.2.0"
-firebase-bom = "33.7.0"
-google-services = "4.4.2"
-firebase-crashlytics-gradle = "3.0.2"
-datastore = "1.1.1"
+firebase-bom = "33.16.0"
+google-services = "4.4.3"
+firebase-crashlytics-gradle = "3.0.4"
+datastore = "1.1.7"
 coilCompose = "3.1.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 
 onesignal = "5.1.28"
-room = "2.6.1"
-core = "1.15.0"
+room = "2.7.2"
+core = "1.16.0"
 swiperefreshlayout = "1.1.0"
 transportApi = "4.0.0"
 [libraries]
@@ -42,6 +51,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilNetworkKtor3" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
@@ -82,8 +92,12 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 core = { module = "androidx.core:core", version.ref = "core" }
 transport-api = { group = "com.google.android.datatransport", name = "transport-api", version.ref = "transportApi" }
+ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 [plugins]
-
+room = { id = "androidx.room", version.ref = "room" }
+#jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }

@@ -2,17 +2,22 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
+    //id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
-
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 android {
     namespace = "com.lds.wvrss"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    buildToolsVersion = libs.versions.android.buildTools.get()
 
     defaultConfig {
 
-        minSdk = 21
-        targetSdk = 35
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 //        versionCode = 1
 //        versionName = "1.0"
 
@@ -59,5 +64,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     ksp(libs.androidx.room.compiler)
     implementation(libs.room.ktx)
-    api("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    api(libs.accompanist.swiperefresh)
 }

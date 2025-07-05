@@ -6,10 +6,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     alias(libs.plugins.hilt)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
+//    alias(libs.plugins.google.services)
+//    alias(libs.plugins.firebase.crashlytics)
 
-    id("com.google.devtools.ksp")
+    //id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
 }
 
 fun generateVersion(): Pair<Int, String> {
@@ -34,15 +35,20 @@ android {
         baseline = file("lint-baseline.xml")
     }
 
+    //namespace = "com.knopka.kz"
     namespace = "com.knopka.kz"
-    compileSdk = 35
+
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    buildToolsVersion = libs.versions.android.buildTools.get()
 
     val version = generateVersion()
 
     defaultConfig {
-        applicationId = "com.knopka.kz"
-        minSdk = 21
-        targetSdk = 35
+        //applicationId = "com.knopka.kz"
+        applicationId = "com.example.app"
+
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         versionCode = version.first
         versionName = version.second
@@ -56,24 +62,32 @@ android {
     //brand57 brand57
 
     signingConfigs {
-        create("config") {
+        create("knopka") {
             keyAlias = "knopka"
             keyPassword = "knopka"
             storeFile = file("keystore/brand57.jks")
             storePassword = "brand57"
         }
+
+        create("pozitiv") {
+            keyAlias = "knopka"
+            keyPassword = "knopka"
+            storeFile = file("keystore/brand57.jks")
+            storePassword = "brand57"
+        }
+
     }
 
     buildTypes {
 
         getByName("debug"){
             applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.getByName("config")
+            //signingConfig = signingConfigs.getByName("config")
         }
 
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("config")
+            //signingConfig = signingConfigs.getByName("config")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -82,11 +96,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -97,6 +111,29 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+
+
+    flavorDimensions += "client"
+
+    productFlavors {
+
+        create("knopka") {
+            dimension = "client"
+            applicationId = "com.knopka.kz"
+            versionNameSuffix = "-knopka"
+            resValue("string", "app_name", "knopka.kz")
+            signingConfig = signingConfigs.getByName("knopka")
+        }
+
+        create("pozitiv") {
+            dimension = "client"
+            applicationId = "com.appbery.appberypositiverf"
+            versionNameSuffix = "-positiverf"
+            resValue("string", "app_name", "Позитив")
+            signingConfig = signingConfigs.getByName("pozitiv")
         }
     }
 }
@@ -122,13 +159,13 @@ dependencies {
     implementation(project(":features:webview"))
     implementation(libs.transport.api)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform("androidx.compose:compose-bom:2025.01.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
