@@ -24,7 +24,9 @@ fun KnopkaBottomNavigation(
     currentRoute: String,
     onNavigate: (Screen) -> Unit
 ) {
-    NavigationBar(modifier = Modifier.height(68.dp)) {
+    NavigationBar(
+        //modifier = Modifier.height(68.dp)
+    ) {
         Screen.bottomNavItems.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.screen.route,

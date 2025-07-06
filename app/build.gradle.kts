@@ -14,8 +14,8 @@ plugins {
 }
 
 fun generateVersion(): Pair<Int, String> {
-    val major = 2  // Используем как buildNumber и первую цифру версии
-    val minor = 4  // Новые фичи
+    val major = 1  // Используем как buildNumber и первую цифру версии
+    val minor = 0  // Новые фичи
     val patch = 14  // Фиксы
 
     val date = LocalDate.now()
@@ -70,10 +70,10 @@ android {
         }
 
         create("pozitiv") {
-            keyAlias = "knopka"
-            keyPassword = "knopka"
-            storeFile = file("keystore/brand57.jks")
-            storePassword = "brand57"
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("keystore/keystore.jks")
+            storePassword = "release"
         }
 
     }
@@ -81,7 +81,7 @@ android {
     buildTypes {
 
         getByName("debug") {
-            applicationIdSuffix = ".debug"
+            //applicationIdSuffix = ".debug"
             //signingConfig = signingConfigs.getByName("config")
         }
 
@@ -89,10 +89,7 @@ android {
             isMinifyEnabled = false
             //signingConfig = signingConfigs.getByName("config")
 
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -121,13 +118,13 @@ android {
 
     productFlavors {
 
-        create("knopka") {
-            dimension = "client"
-            applicationId = "com.knopka.kz"
-            versionNameSuffix = "-knopka"
-            resValue("string", "app_name", "knopka.kz")
-            signingConfig = signingConfigs.getByName("knopka")
-        }
+//        create("knopka") {
+//            dimension = "client"
+//            applicationId = "com.knopka.kz"
+//            versionNameSuffix = "-knopka"
+//            resValue("string", "app_name", "knopka.kz")
+//            signingConfig = signingConfigs.getByName("knopka")
+//        }
 
         create("pozitiv") {
             dimension = "client"
@@ -152,7 +149,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
-    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
+    implementation(platform(libs.androidx.compose.bom))
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
@@ -165,7 +162,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.01.01"))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
@@ -187,5 +184,5 @@ dependencies {
     implementation(libs.accompanist.webview)
     implementation(libs.google.firebase.crashlytics)
 
-    implementation("com.github.wiryadev:BootstrapIconsCompose:0.2.0")
+    implementation(libs.bootstrapiconscompose)
 } 

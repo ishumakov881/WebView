@@ -25,6 +25,7 @@ import com.wiryadev.bootstrapiconscompose.bootstrapicons.normal.Whatsapp
 import androidx.navigation.NavController
 import androidx.core.net.toUri
 import android.widget.Toast
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 
 fun safeStartActivity(context: Context, intent: Intent) {
     try {
@@ -42,34 +43,40 @@ fun ProfileScreen(navController: NavController) {
     val items = listOf(
         ContactItem(Icons.Default.Public, "Вконтакте") {
             val intent = Intent(Intent.ACTION_VIEW, "https://vk.com/positivefoto".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(BootstrapIcons.Normal.Instagram, "Instagram") {
-            val intent = Intent(Intent.ACTION_VIEW,
-                "https://www.instagram.com/positivefoto/".toUri())
+            val intent = Intent(Intent.ACTION_VIEW, "https://www.instagram.com/positivefoto/".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(BootstrapIcons.Normal.Whatsapp, "WhatsApp") {
             val intent = Intent(Intent.ACTION_VIEW, "https://wa.me/+79276410707".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(BootstrapIcons.Normal.Telegram, "Telegram") {
             val intent = Intent(Intent.ACTION_VIEW, "https://t.me/positivephoto24".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(Icons.Default.Email, "Написать на email") {
             val intent = Intent(Intent.ACTION_SENDTO, "mailto:ceo@positivefranchise.ru".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(Icons.Default.Share, "Поделиться") {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, "Скачать приложение: https://play.google.com/store/apps/details?id=$packageName")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             safeStartActivity(context, Intent.createChooser(intent, "Поделиться"))
         },
         ContactItem(Icons.Default.Star, "Оценить приложение") {
             val intent = Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             safeStartActivity(context, intent)
         },
         ContactItem(Icons.Default.Info, "О приложении") {
@@ -115,7 +122,7 @@ fun ProfileScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null
                     )
                 }

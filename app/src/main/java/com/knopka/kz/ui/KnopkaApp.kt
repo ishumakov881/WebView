@@ -1,5 +1,6 @@
 package com.knopka.kz.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -20,8 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -35,6 +39,8 @@ import com.knopka.kz.navigation.Screen
 import com.knopka.kz.navigation.Screen.Companion.bottomNavItems
 import com.knopka.kz.ui.components.KnopkaBottomNavigation
 import com.knopka.kz.ui.screens.WebViewScreen
+import com.knopka.kz.ui.screens.OnboardingScreen
+import androidx.core.content.edit
 
 data class WebViewControls(
     val canGoBack: Boolean,
@@ -53,108 +59,102 @@ fun KnopkaApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
     val showBackButton = navController.previousBackStackEntry != null
-
-    //val refreshTriggers = remember { mutableStateMapOf<String, Boolean>() }
     val webViewControlsMap = remember { mutableStateMapOf<String, WebViewControls?>() }
     val screenTitle = Screen.bottomNavItems.find { it.screen.route == currentRoute }?.label ?: ""
 
+    val context = LocalContext.current
+    var showOnboarding by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            if (TOP_BAR_ENABLED)
-                TopAppBar(
-                    title = {
-                        Column {
-                            Text(
-                                text = stringResource(R.string.app_name),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Text(
-                                text = screenTitle,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    },
-                    actions = {
-                        // Общие действия для всех экранов
-//                    IconButton(onClick = {
-//                        refreshTriggers[currentRoute] = !(refreshTriggers[currentRoute] ?: false)
-//                    }) {
-//                        Icon(Icons.Default.Refresh, "Refresh")
-//                    }
-                        val controls = webViewControlsMap[currentRoute]
+    LaunchedEffect(Unit) {
+        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        showOnboarding = !prefs.getBoolean("onboarding_shown", false)
+    }
 
-
-                        if (controls?.canGoBack == true) {
-                            IconButton(onClick = { controls.goBack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                            }
-                        }
-
-                        if (controls?.canGoForward == true) {
-                            IconButton(onClick = { controls.goForward() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowForward, "Forward")
-                            }
-                        }
-
-                        IconButton(onClick = { controls?.reload?.invoke() }) {
-                            Icon(Icons.Default.Refresh, "Refresh")
-                        }
-
-                    },
-                    navigationIcon = {
-                        if (showBackButton) {
-                            IconButton(onClick = { navController.navigateUp() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Back"
+    if (showOnboarding) {
+        OnboardingScreen(onFinish = {
+            val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            prefs.edit { putBoolean("onboarding_shown", true) }
+            showOnboarding = false
+        })
+    } else {
+        Scaffold(
+            topBar = {
+                if (TOP_BAR_ENABLED)
+                    TopAppBar(
+                        title = {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.app_name),
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Text(
+                                    text = screenTitle,
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
-                        } else {
-                            // Кнопка "Домой" когда нет backstack
-                            IconButton(
-                                onClick = {
-                                    if (currentRoute != Screen.HomeScreen.route) {
-                                        navController.navigate(Screen.HomeScreen.route) {
-                                            popUpTo(navController.graph.startDestinationId)
+                        },
+                        actions = {
+                            val controls = webViewControlsMap[currentRoute]
+                            if (controls?.canGoBack == true) {
+                                IconButton(onClick = { controls.goBack() }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                                }
+                            }
+                            if (controls?.canGoForward == true) {
+                                IconButton(onClick = { controls.goForward() }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, "Forward")
+                                }
+                            }
+                            IconButton(onClick = { controls?.reload?.invoke() }) {
+                                Icon(Icons.Default.Refresh, "Refresh")
+                            }
+                        },
+                        navigationIcon = {
+                            if (showBackButton) {
+                                IconButton(onClick = { navController.navigateUp() }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Back"
+                                    )
+                                }
+                            } else {
+                                IconButton(
+                                    onClick = {
+                                        if (currentRoute != Screen.HomeScreen.route) {
+                                            navController.navigate(Screen.HomeScreen.route) {
+                                                popUpTo(navController.graph.startDestinationId)
+                                            }
                                         }
-                                    }
-
-                                },
-                                //enabled =  Screen.Home.route!=currentRoute
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Home,
-                                    contentDescription = "Home"
-                                )
+                                    },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Home,
+                                        contentDescription = "Home"
+                                    )
+                                }
                             }
                         }
-                    }
-//                backgroundColor = MaterialTheme.colors.primary,
-//                elevation = 4.dp
-                ) else null
-        },
-        bottomBar = {
-            if (bottomNavItems.size > 1)
-                KnopkaBottomNavigation(
-                    currentRoute = currentRoute,
-                    onNavigate = { screen ->
-                        navController.navigate(screen.route) {
-                            // Очищаем бэкстек до выбранного экрана
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                    ) else null
+            },
+            bottomBar = {
+                if (bottomNavItems.size > 1)
+                    KnopkaBottomNavigation(
+                        currentRoute = currentRoute,
+                        onNavigate = { screen ->
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            // Избегаем дублирования экранов в стеке
-                            launchSingleTop = true
-                            // Восстанавливаем состояние при возврате
-                            restoreState = true
                         }
-                    }
-                ) else null
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            KnopkaNavHost(navController = navController, webViewControlsMap = webViewControlsMap)
+                    ) else null
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                KnopkaNavHost(navController = navController, webViewControlsMap = webViewControlsMap)
+            }
         }
     }
 }

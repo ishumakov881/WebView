@@ -7,6 +7,7 @@ android-buildTools = "36.0.0"
 
 accompanistSwiperefresh = "0.32.0"
 accompanistWebview = "0.36.0"
+bootstrapiconscompose = "0.2.0"
 kotlin = "2.1.21"
 kotlintestRunnerJunit5 = "3.4.2"
 ksp = "2.1.21-2.0.1"
@@ -20,7 +21,7 @@ kotlinxCoroutinesAndroid = "1.10.2"
 lifecycle-runtime-ktx = "2.9.1"
 activity-compose = "1.10.1"
 compose-compiler = "1.5.8"
-compose-bom = "2024.04.01"
+compose-bom = "2025.06.01"
 lifecycleViewmodelCompose = "2.9.1"
 navigation-compose = "2.9.1"
 hilt = "2.55"
@@ -53,6 +54,7 @@ androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+bootstrapiconscompose = { module = "com.github.wiryadev:BootstrapIconsCompose", version.ref = "bootstrapiconscompose" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilNetworkKtor3" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlytics" }
