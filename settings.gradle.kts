@@ -1,12 +1,19 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
+        flatDir {
+            dirs("D:\\walhalla\\sdk\\android\\JetpackCompose\\WebViewKnopkakz0\\libs")
         }
+        google()
+//        google {
+//            mavenContent {
+//                includeGroupAndSubgroups("androidx")
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//            }
+//        }
+        //mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
@@ -14,16 +21,29 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    //repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        flatDir {
+            dirs("D:\\walhalla\\sdk\\android\\JetpackCompose\\WebViewKnopkakz0\\libs")
+        }
         google()
+//        google {
+//            mavenContent {
+//                includeGroupAndSubgroups("androidx")
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//            }
+//        }
+        //mavenLocal()
         mavenCentral()
-        gradlePluginPortal()
         maven("https://jitpack.io")
-        jcenter()
+        maven("https://repo1.maven.org/maven2/")
+        maven("https://androidx.dev/storage/compose-compiler/repository/")
+
+        maven("https://maven.google.com")
+        maven("https://dl.bintray.com/videolan/Android")
     }
 }
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 
 rootProject.name = "WebView"
 include(":app")

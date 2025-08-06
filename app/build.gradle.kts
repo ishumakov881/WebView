@@ -1,5 +1,14 @@
 import java.time.LocalDate
 
+import java.util.Properties
+import java.text.SimpleDateFormat
+import java.util.Date
+
+fun versionCodeDate(): Int {
+    val dateFormat = SimpleDateFormat("yyMMdd")
+    return dateFormat.format(Date()).toInt()
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -13,21 +22,6 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-fun generateVersion(): Pair<Int, String> {
-    val major = 1  // Используем как buildNumber и первую цифру версии
-    val minor = 0  // Новые фичи
-    val patch = 14  // Фиксы
-
-    val date = LocalDate.now()
-    val year = date.year % 100
-    val month = date.monthValue.toString().padStart(2, '0').toInt()
-    val day = date.dayOfMonth.toString().padStart(2, '0').toInt()
-
-    val versionCode = year * 1000000 + month * 10000 + day * 100 + major
-    val versionName = "$major.$minor.$patch"
-
-    return Pair(versionCode, versionName)
-}
 
 android {
 
@@ -41,7 +35,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     buildToolsVersion = libs.versions.android.buildTools.get()
 
-    val version = generateVersion()
+    val code = versionCodeDate()
 
     defaultConfig {
         //applicationId = "com.knopka.kz"
@@ -50,8 +44,8 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
 
-        versionCode = version.first
-        versionName = version.second
+        versionCode = code
+        versionName = "1.3.$code"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,6 +56,7 @@ android {
     //brand57 brand57
 
     signingConfigs {
+
         create("knopka") {
             keyAlias = "knopka"
             keyPassword = "knopka"
@@ -72,7 +67,14 @@ android {
         create("pozitiv") {
             keyAlias = "release"
             keyPassword = "release"
-            storeFile = file("keystore/keystore.jks")
+            storeFile = file("keystore/pozitiv.jks")
+            storePassword = "release"
+        }
+
+        create("lordseriala") {
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("keystore/lordseriala.jks")
             storePassword = "release"
         }
 
@@ -86,7 +88,7 @@ android {
         }
 
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             //signingConfig = signingConfigs.getByName("config")
 
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -118,13 +120,24 @@ android {
 
     productFlavors {
 
-//        create("knopka") {
-//            dimension = "client"
-//            applicationId = "com.knopka.kz"
-//            versionNameSuffix = "-knopka"
-//            resValue("string", "app_name", "knopka.kz")
-//            signingConfig = signingConfigs.getByName("knopka")
-//        }
+        create("knopka") {
+            dimension = "client"
+            applicationId = "com.knopka.kz"
+            versionNameSuffix = "-knopka"
+            resValue("string", "app_name", "knopka.kz")
+            signingConfig = signingConfigs.getByName("knopka")
+        }
+
+
+        create("lordseriala") {
+            dimension = "client"
+            applicationId = "life.lordseriala.android"
+            versionNameSuffix = "-lordseriala"
+            resValue("string", "app_name", "LORDSERIALA")
+            resValue("bool", "show_onboarding", "false")
+
+            signingConfig = signingConfigs.getByName("lordseriala")
+        }
 
         create("pozitiv") {
             dimension = "client"
@@ -147,9 +160,9 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.material3)
-    implementation(platform(libs.androidx.compose.bom))
+
+    implementation(libs.androidx.compose.material3)
+    //implementation(platform(libs.androidx.compose.bom))
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
@@ -162,7 +175,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
+    //androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
@@ -185,4 +198,10 @@ dependencies {
     implementation(libs.google.firebase.crashlytics)
 
     implementation(libs.bootstrapiconscompose)
+    // SplashScreen
+    implementation(libs.androidx.core.splashscreen)
+
+    // https://mvnrepository.com/artifact/androidx.annotation/annotation-experimental
+    runtimeOnly(libs.androidx.annotation.experimental)
+    implementation("androidx.activity:activity-ktx:1.11.0-rc01")
 } 

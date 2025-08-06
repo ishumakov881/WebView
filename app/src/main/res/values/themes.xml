@@ -21,4 +21,14 @@
         <item name="android:navigationBarColor">#ea0093</item>
 
     </style>
-</resources> 
+
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/jetstream_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.WebView</item>
+    </style>
+
+
+    <color name="jetstream_background">#f7f8f5</color>
+</resources>

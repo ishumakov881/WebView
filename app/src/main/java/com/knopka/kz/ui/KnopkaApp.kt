@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -41,6 +42,9 @@ import com.knopka.kz.ui.components.KnopkaBottomNavigation
 import com.knopka.kz.ui.screens.WebViewScreen
 import com.knopka.kz.ui.screens.OnboardingScreen
 import androidx.core.content.edit
+import com.knopka.kz.ui.screens.AboutScreen
+import com.knopka.kz.ui.screens.NotificationsScreen
+import com.knopka.kz.ui.screens.ProfileScreen
 
 data class WebViewControls(
     val canGoBack: Boolean,
@@ -60,17 +64,19 @@ fun KnopkaApp() {
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
     val showBackButton = navController.previousBackStackEntry != null
     val webViewControlsMap = remember { mutableStateMapOf<String, WebViewControls?>() }
-    val screenTitle = Screen.bottomNavItems.find { it.screen.route == currentRoute }?.label ?: ""
+    val screenTitle = bottomNavItems.find { it.screen.route == currentRoute }?.label ?: ""
 
     val context = LocalContext.current
-    var showOnboarding by remember { mutableStateOf(false) }
+    val def = booleanResource(R.bool.show_onboarding)
+    var showOnboarding by remember { mutableStateOf( !def)}
+
 
     LaunchedEffect(Unit) {
         val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         showOnboarding = !prefs.getBoolean("onboarding_shown", false)
     }
 
-    if (showOnboarding) {
+    if (showOnboarding && def) {
         OnboardingScreen(onFinish = {
             val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
             prefs.edit { putBoolean("onboarding_shown", true) }
@@ -181,18 +187,18 @@ fun KnopkaNavHost(
                 }
                 Screen.NotificationsScreen -> {
                     composable(Screen.NotificationsScreen.route) {
-                        com.knopka.kz.ui.screens.NotificationsScreen()
+                        NotificationsScreen()
                     }
                 }
                 Screen.ProfileScreen -> {
                     composable(Screen.ProfileScreen.route) {
-                        com.knopka.kz.ui.screens.ProfileScreen(navController)
+                        ProfileScreen(navController)
                     }
                 }
             }
             // Экран 'О приложении'
             composable("about") {
-                com.knopka.kz.ui.screens.AboutScreen(onBack = { navController.popBackStack() })
+                AboutScreen(onBack = { navController.popBackStack() })
             }
 //            composable(screen.first.route) {
 //                WebViewScreen(

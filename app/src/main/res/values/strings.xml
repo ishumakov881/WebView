@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="onboarding_title_1">Качество и сервис с 2009 года</string>
     <string name="onboarding_title_2">Фотоподарки, копицентр, полиграфия онлайн</string>
     <string name="onboarding_continue">Продолжить</string>

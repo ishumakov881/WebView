@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -93,7 +94,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Divider()
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
             ListItem(
                 headlineContent = { Text("Подробнее о франшизе") },
                 trailingContent = {

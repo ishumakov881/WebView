@@ -11,7 +11,7 @@ import androidx.compose.material.icons.filled.Notifications
 
 //http://10.0.59.120:5173/search
 sealed class Screen(val route: String, val url: String? = null) {
-    object HomeScreen : Screen("home", "https://позитивфото.рф")
+    object HomeScreen : Screen("home", "https://lordseriala.life/")
     object AddItem : Screen("add_item", "https://knopka.kz/item/add")
 //    object Messages : Screen("messages", "https://knopka.kz/cabinet/messages")
 //    object Profile : Screen("profile", "https://knopka.kz/cabinet/items")
@@ -57,11 +57,11 @@ sealed class Screen(val route: String, val url: String? = null) {
         */
 
         // НОВАЯ ВЕРСИЯ (по иконкам с твоего скрина)
-        val bottomNavItems = listOf(
+        val bottomNavItems: List<BottomNavItem> = listOf(
             BottomNavItem(HomeScreen, "Главная", Icons.Filled.Home),
-            BottomNavItem(NotificationsScreen, "Уведомления", Icons.Filled.Notifications),
-            BottomNavItem(ProfileScreen, "Меню", Icons.Filled.Apps)
-            // Если нужны другие экраны — раскомментируй или добавь!
+//            BottomNavItem(NotificationsScreen, "Уведомления", Icons.Filled.Notifications),
+//            BottomNavItem(ProfileScreen, "Меню", Icons.Filled.Apps)
+//            // Если нужны другие экраны — раскомментируй или добавь!
         )
     }
 } 

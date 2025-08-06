@@ -20,9 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.knopka.kz.ui.theme.KnopkaTheme
 import android.content.Context
+import androidx.core.content.edit
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         saveFirstLaunchTimeIfNeeded()
         
@@ -70,7 +73,7 @@ class MainActivity : ComponentActivity() {
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         if (!prefs.contains("first_launch_time")) {
             val now = System.currentTimeMillis()
-            prefs.edit().putLong("first_launch_time", now).apply()
+            prefs.edit { putLong("first_launch_time", now) }
         }
     }
 } 
