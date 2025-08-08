@@ -68,7 +68,7 @@ fun KnopkaApp() {
 
     val context = LocalContext.current
     val def = booleanResource(R.bool.show_onboarding)
-    var showOnboarding by remember { mutableStateOf( !def)}
+    var showOnboarding by remember { mutableStateOf(!def) }
 
 
     LaunchedEffect(Unit) {
@@ -159,7 +159,7 @@ fun KnopkaApp() {
             }
         ) { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                KnopkaNavHost(navController = navController, webViewControlsMap = webViewControlsMap)
+                KnopkaNavHost(controller = navController, webViewControlsMap = webViewControlsMap)
             }
         }
     }
@@ -168,37 +168,54 @@ fun KnopkaApp() {
 
 @Composable
 fun KnopkaNavHost(
-    navController: NavHostController,
+    controller: NavHostController,
     webViewControlsMap: MutableMap<String, WebViewControls?>,
     startDestination: String = Screen.HomeScreen.route
 ) {
-    NavHost(navController = navController, startDestination = startDestination) {
+
+    val context = LocalContext.current
+
+    NavHost(navController = controller, startDestination = startDestination) {
 
         bottomNavItems.forEach { screen ->
-            when(screen.screen){
+            when (screen.screen) {
                 Screen.AddItem -> {}
                 Screen.HomeScreen -> {
                     composable(Screen.HomeScreen.route) {
+
+
+//                        BackHandler(onBack = {
+//                            Toast.makeText(context, "@@@@@", Toast.LENGTH_SHORT).show()
+//                        })
+
+
                         WebViewScreen(
-                            url = Screen.HomeScreen.url?:"",
-                            onControlsChanged = { webViewControlsMap[Screen.HomeScreen.route] = it }
+                            url = Screen.HomeScreen.url ?: "",
+                            onControlsChanged = {
+                                webViewControlsMap[Screen.HomeScreen.route] = it
+                            },
+                            onBackPressed = {
+                                controller.popBackStack() // Выходим из экрана
+                            }
                         )
                     }
                 }
+
                 Screen.NotificationsScreen -> {
                     composable(Screen.NotificationsScreen.route) {
                         NotificationsScreen()
                     }
                 }
+
                 Screen.ProfileScreen -> {
                     composable(Screen.ProfileScreen.route) {
-                        ProfileScreen(navController)
+                        ProfileScreen(controller)
                     }
                 }
             }
             // Экран 'О приложении'
             composable("about") {
-                AboutScreen(onBack = { navController.popBackStack() })
+                AboutScreen(onBack = { controller.popBackStack() })
             }
 //            composable(screen.first.route) {
 //                WebViewScreen(

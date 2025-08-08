@@ -27,19 +27,23 @@ import com.walhalla.webview.ChromeView
 import com.walhalla.webview.ReceivedError
 import com.walhalla.webview.utility.ActivityUtils
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.walhalla.landing.activity.DLog.d
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberUpdatedState
 import com.knopka.kz.ui.WebViewControls
 import androidx.core.net.toUri
+import com.walhalla.webview.MyWebChromeClient
 
 @Composable
-fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
+fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit, onBackPressed: () -> Unit){
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -53,6 +57,39 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
     val context = LocalContext.current
     val activity = context as Activity
+
+    var backPressedOnce = false
+
+    BackHandler {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            webView?.let {
+                webView->
+                if ((webView.webChromeClient as? MyWebChromeClient)?.isInFullscreen() == true) {
+                    (webView.webChromeClient as MyWebChromeClient).onHideCustomView()
+                } else {
+                    if (webView.canGoBack()) {
+                        webView.goBack()
+                    }
+                    else {
+                        onBackPressed()
+////                        if (backPressedOnce) {
+////                            super.onBackPressed()
+////                            return
+////                        }
+//
+//                        backPressedOnce = true
+//                        Toast.makeText(context, "Нажмите ещё раз для выхода", Toast.LENGTH_SHORT).show()
+//
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            backPressedOnce = false
+//                        }, 1100)
+                    }
+                }
+            }
+        }
+
+
+    }
 
 
     //val handler = rememberUpdatedState(onControlsChanged)

@@ -26,19 +26,26 @@
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
 
+
+<!--        ! сохраняет состояние WebView при повороте !-->
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity"
-            android:theme="@style/Theme.App.Starting">
+            android:theme="@style/Theme.App.Starting"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:hardwareAccelerated="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
     </application>
 
     <queries>
