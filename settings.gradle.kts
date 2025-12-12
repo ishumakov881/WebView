@@ -10,7 +10,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        jcenter()
+
     }
 }
 dependencyResolutionManagement {
@@ -20,7 +20,7 @@ dependencyResolutionManagement {
         mavenCentral()
         gradlePluginPortal()
         maven("https://jitpack.io")
-        jcenter()
+
     }
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -30,5 +30,6 @@ include(":app")
 include(":wvcore")
 include(":wvrss")
 
+
 include(":features:webview")
-project(":features:webview").projectDir = File("C:\\src\\Synced/WalhallaUI\\features\\webview")
+project(":features:webview").projectDir = File("webview")

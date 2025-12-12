@@ -6,79 +6,79 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     alias(libs.plugins.hilt)
-    alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics)
+//    alias(libs.plugins.google.services)
+//    alias(libs.plugins.firebase.crashlytics)
 
     id("com.google.devtools.ksp")
 }
 
-fun generateVersion(): Pair<Int, String> {
-    val major = 2  // Используем как buildNumber и первую цифру версии
-    val minor = 4  // Новые фичи
-    val patch = 14  // Фиксы
+val majorVersion = 1
+val minorVersion = 21
+val patchVersion = 4
+//val versionSuffix = "beta.1"
+val versionSuffix = ""//"" для стабильной версии
 
-    val date = LocalDate.now()
-    val year = date.year % 100
-    val month = date.monthValue.toString().padStart(2, '0').toInt()
-    val day = date.dayOfMonth.toString().padStart(2, '0').toInt()
-
-    val versionCode = year * 1000000 + month * 10000 + day * 100 + major
-    val versionName = "$major.$minor.$patch"
-
-    return Pair(versionCode, versionName)
+val _versionName = if (versionSuffix.isNotBlank()) {
+    "$majorVersion.$minorVersion.$patchVersion-$versionSuffix"
+} else {
+    "$majorVersion.$minorVersion.$patchVersion"
 }
 
+val _versionCode = majorVersion * 10000 + minorVersion * 100 + patchVersion
+//=====================================================================
 android {
 
     lint {
         baseline = file("lint-baseline.xml")
     }
 
-    namespace = "com.knopka.kz"
-    compileSdk = 35
+    namespace = "net.lds.online"
+    compileSdk = 36
 
-    val version = generateVersion()
 
     defaultConfig {
-        applicationId = "com.knopka.kz"
-        minSdk = 21
-        targetSdk = 35
+        //applicationId = "net.lds.online"
+        //applicationId = "net.lds.online.webview"
+        applicationId = "net.lds.online.beta"
 
-        versionCode = version.first
-        versionName = version.second
+        minSdk = 21
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+
+        versionCode = _versionCode
+        versionName = _versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-    }
 
-    //brand57 brand57
+        setProperty("archivesBaseName", "$applicationId-$_versionName")
+    }
 
     signingConfigs {
-        create("config") {
-            keyAlias = "knopka"
-            keyPassword = "knopka"
-            storeFile = file("keystore/brand57.jks")
-            storePassword = "brand57"
+        create("release") {
+            if (project.hasProperty("KEYSTORE")) {
+                storeFile = file(project.properties["KEYSTORE"] as String)
+                storePassword = project.properties["KEYSTORE_PASSWORD"] as String
+                keyAlias = project.properties["KEY_ALIAS"] as String
+                keyPassword = project.properties["KEY_PASSWORD"] as String
+            }
         }
     }
-
     buildTypes {
 
-        getByName("debug"){
-            applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.getByName("config")
-        }
-
-        getByName("release") {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("config")
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        buildTypes {
+            getByName("debug") {
+                //applicationIdSuffix = ".debug" // добавляет к applicationId суффикс
+                versionNameSuffix = "-debug-WebView"   // добавляет к versionName суффикс
+                //signingConfig = signingConfigs.getByName("release")
+            }
+            getByName("release") {
+                isMinifyEnabled = false
+                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+                versionNameSuffix = "-release"
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {
@@ -112,7 +112,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
-    implementation(platform("androidx.compose:compose-bom:2025.01.01"))
+    implementation(platform(libs.androidx.compose.bom))
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
 
@@ -125,7 +125,6 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.01.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

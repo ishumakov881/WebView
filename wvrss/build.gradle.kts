@@ -12,7 +12,7 @@ android {
     defaultConfig {
 
         minSdk = 21
-        targetSdk = 35
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 //        versionCode = 1
 //        versionName = "1.0"
 

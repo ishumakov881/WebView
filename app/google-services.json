@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "794079213108",
-    "project_id": "knopka-99bd3",
-    "storage_bucket": "knopka-99bd3.firebasestorage.app"
+    "project_number": "795645952885",
+    "project_id": "lds-online-app",
+    "storage_bucket": "lds-online-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:794079213108:android:42c60a5395ffa66b09fc61",
+        "mobilesdk_app_id": "1:795645952885:android:0e4250d6b535276c70493c",
         "android_client_info": {
-          "package_name": "com.knopka.kz"
+          "package_name": "net.lds.online"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCWj_VCpw9327zAX7ChXIiVxMJfpHyC_Ow"
+          "current_key": "AIzaSyAMUrakWF0sfgzOe8p78BO5aDJ4own1zb0"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:794079213108:android:e471aea405272e4509fc61",
+        "mobilesdk_app_id": "1:795645952885:android:727f096b5cda696d70493c",
         "android_client_info": {
-          "package_name": "com.knopka.kz.debug"
+          "package_name": "net.lds.online.test"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCWj_VCpw9327zAX7ChXIiVxMJfpHyC_Ow"
+          "current_key": "AIzaSyAMUrakWF0sfgzOe8p78BO5aDJ4own1zb0"
         }
       ],
       "services": {
