@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WV</string>
+    <string name="fragment_main_downloading">Downloading…</string>
+    <string name="data_to_clipboard">Copied to Clipboard: %s.</string>
+</resources>

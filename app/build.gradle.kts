@@ -14,7 +14,7 @@ plugins {
 
 val majorVersion = 1
 val minorVersion = 21
-val patchVersion = 4
+val patchVersion = 5
 //val versionSuffix = "beta.1"
 val versionSuffix = ""//"" для стабильной версии
 
@@ -60,7 +60,10 @@ android {
             if (project.hasProperty("KEYSTORE")) {
                 storeFile = file(project.properties["KEYSTORE"] as String)
                 storePassword = project.properties["KEYSTORE_PASSWORD"] as String
-                keyAlias = project.properties["KEY_ALIAS"] as String
+
+                //keyAlias = project.properties["KEY_ALIAS"] as String
+                keyAlias = project.properties["KEY_ALIAS_UPLOAD"] as String//<------ UPLOAD KEY <<Google PLay>>
+
                 keyPassword = project.properties["KEY_PASSWORD"] as String
             }
         }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_error">Network error…</string>
+    <string name="network_error_message">No internet connection. Please reconnect and try again.</string>
+
+</resources>
