@@ -370,7 +370,8 @@ open class CustomWebViewClient(
         } else if (url.startsWith("mailto:")) {
             try {
                 val mailTo = MailTo.parse(url)
-                ActivityUtils.startEmailActivity(context, mailTo.to ?: "", mailTo.subject, mailTo.body
+                ActivityUtils.startEmailActivity(
+                    context, mailTo.to ?: "", mailTo.subject, mailTo.body
                 )
             } catch (ignored: ParseException) {
             }
@@ -489,11 +490,12 @@ open class CustomWebViewClient(
         val uri = url.toUri()
         val domain = uri.host
 
-        val result =  if (domain != null && (domain.endsWith(".$baseDomain") || domain == baseDomain)) {
-            true
-        } else {
-            false
-        }
+        val result =
+            if (domain != null && (domain.endsWith(".$baseDomain") || domain == baseDomain)) {
+                true
+            } else {
+                false
+            }
 
 
         println("isSameDomain: $domain $baseDomain $result")
@@ -567,15 +569,16 @@ open class CustomWebViewClient(
         if (HANDLE_ERROR_CODE) {
             val errorOnTheSamePage = isErrorOnTheSamePage(failure.failingUrl)
             val errorCode = failure.errorCode
-            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode")
+            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode ${theerrorisalreadyshown()}")
             //ERR_PROXY_CONNECTION_FAILED, we use Charles
-            
 
-            when(errorCode){
-                (ERROR_PROXY_AUTHENTICATION) ->{
+
+            when (errorCode) {
+                (ERROR_PROXY_AUTHENTICATION) -> {
                     setErrorPage(failure)
                 }
-                (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) ->{ //-2 ERR_NAME_NOT_RESOLVED
+
+                (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
                     if (!theerrorisalreadyshown()) {
                         if (errorOnTheSamePage) {
                             //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
@@ -586,17 +589,8 @@ open class CustomWebViewClient(
                     }
                     webClientError(failure)
                 }
-                (ERROR_TIMEOUT) ->{ //-8 ERR_CONNECTION_TIMED_OUT
-                    if (!theerrorisalreadyshown()) {
-                        if (errorOnTheSamePage) {
-                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                            setErrorPage(failure)
-                        }
-                    }
-                    webClientError(failure)
-                }
-                (ERROR_CONNECT) ->{ // -6	net::ERR_CONNECTION_REFUSED
+
+                (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT
                     if (!theerrorisalreadyshown()) {
                         if (errorOnTheSamePage) {
                             //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
@@ -607,9 +601,21 @@ open class CustomWebViewClient(
                     webClientError(failure)
                 }
 
-                (-14)-> { // -14 is error for file not found, like 404.
-                 //Skip
+                (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
+                    if (!theerrorisalreadyshown()) {
+                        if (errorOnTheSamePage) {
+                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                            setErrorPage(failure)
+                        }
+                    }
+                    webClientError(failure)
                 }
+
+                (-14) -> { // -14 is error for file not found, like 404.
+                    //Skip
+                }
+
                 else -> {
                     webClientError(failure)
                 }
@@ -624,7 +630,7 @@ open class CustomWebViewClient(
     }
 
     private fun theerrorisalreadyshown(): Boolean {
-        return receivedError?.errorCode ?: true != 0
+        return receivedError != null
     }
 
 
@@ -686,7 +692,7 @@ open class CustomWebViewClient(
         println(TAG + "$receivedError")
         //isErrorPageShown0 = true;
         receivedError = newValue
-        
+
         if (nonNull(chromeView)) {
             chromeView?.setErrorPage(newValue)
         }
