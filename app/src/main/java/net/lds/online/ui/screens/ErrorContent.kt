@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.imaginativeworld.oopsnointernet.utils.NoInternetUtils
 
 @Composable
 fun ErrorContent(isLoading: Boolean, onReload: () -> Unit) {
@@ -48,11 +49,7 @@ fun ErrorContent(isLoading: Boolean, onReload: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
 
-                Button(
-                    onClick = {
-                        context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
-                    }
-                ) {
+                Button(onClick = { NoInternetUtils.turnOnWifi(context) }) {
                     Text("Открыть настройки сети")
                 }
 

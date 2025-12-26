@@ -30,7 +30,6 @@ import net.walhalla.landing.activity.DLog.d
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
-import android.widget.Toast
 
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -41,20 +40,32 @@ import com.walhalla.webview.utility.ActivityUtils
 
 import net.lds.online.ui.WebViewControls
 
+
+sealed class LoadState() {
+    class OnPageStarted(url: String?) : LoadState()
+    class OnPageFinished(url: String?) : LoadState()
+}
+
+sealed class VWState() {
+    object FreshCreated : VWState()
+    object FromCache : VWState()
+}
+
 @Composable
 fun WebViewScreenContent(
     url: String,
     onWebViewReady: (WebView) -> Unit,
-    onLoadingChange: (Boolean) -> Unit,
+    onLoadingChange: (LoadState) -> Unit,
+    onWVCreated: (VWState) -> Unit,
     onControlsChanged: () -> Unit,
     onError: (Boolean) -> Unit,
-    onFirstLoadChange: (Boolean) -> Unit
-) {
+
+    ) {
     val context = LocalContext.current
     val activity = context as Activity
     var errorMessage by remember { mutableStateOf("") }
 
-    Box{
+    Box {
         AndroidView(
             factory = { ctx ->
                 SwipeRefreshLayout(ctx).apply {
@@ -75,19 +86,26 @@ fun WebViewScreenContent(
 //                        }
 
                     // Получаем WebView из кэша
-                    val onLoadingChangeLocal: (Boolean) -> Unit = { loading ->
-                        onLoadingChange(loading)
+                    val onPageStarted: (String?) -> Unit = { url ->
+                        onLoadingChange(LoadState.OnPageStarted(url))
                         isRefreshing = false
+                        errorMessage = "PS: $url"
                     }
 
-                    val chromView = object : ChromeView {
+                    val onPageFinished: (String?) -> Unit = { url ->
+                        onLoadingChange(LoadState.OnPageFinished(url))
+                        isRefreshing = false
+                        errorMessage = "PF: $url"
+                    }
+
+                    val chromeView = object : ChromeView {
 
                         override fun onPageStarted(url: String?) {
-                            onLoadingChangeLocal(true)
+                            onPageStarted(url)
                         }
 
                         override fun onPageFinished(url: String?) {
-                            onLoadingChangeLocal(false)
+                            onPageFinished(url)
                             onControlsChanged()
                         }
 
@@ -111,19 +129,10 @@ fun WebViewScreenContent(
                     val cachedWebView = WebViewCache.get(
                         url, activity,
                         //, client
-                        chromeView = chromView,
-                        isFirstLoad = {
-                            println("@@@$it")
-                            onFirstLoadChange(it)
-                            if (it) {
-                                //loadingStartTime = System.currentTimeMillis()
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    if (it) {
-                                        onFirstLoadChange(false)
-                                        onLoadingChange(false)
-                                    }
-                                }, 2000)
-                            }
+                        chromeView = chromeView,
+                        isLoadFromCache = {
+                            println("@@@@@@@@@ $it")
+                            onWVCreated(if (it) VWState.FromCache else VWState.FreshCreated)
                         }
                     ).also { webView ->
                         onWebViewReady(webView)
@@ -281,18 +290,42 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
         WebViewScreenContent(
             url = url,
             onWebViewReady = { webView = it },
-            onLoadingChange = { isLoading = it },
+            onLoadingChange = {
+                when (it) {
+                    is LoadState.OnPageFinished -> {
+                        isLoading = false
+                    }
+
+                    is LoadState.OnPageStarted -> {
+                        isLoading = true
+                    }
+                }
+
+            },
             onControlsChanged = { updateControls() },
             onError = { switchViews = it },
-            onFirstLoadChange = { isFirstLoad = it }
+
+            onWVCreated = {
+                when(it){
+                    VWState.FreshCreated -> {
+                        isFirstLoad = true
+//                        //loadingStartTime = System.currentTimeMillis()
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            isFirstLoad = false
+//                            //@@@ onLoadingChange(false)
+//                        }, 2000)
+                    }
+                    VWState.FromCache -> {
+                        isFirstLoad = false
+                    }
+                }
+            }
         )
 
         // Показываем анимацию загрузки только при первом запуске, когда WebView еще не создан
         if (isFirstLoad) {
             FirstLoadIndicator()
         }
-
-
 
         if (isLoading) {
             LoadingIndicator()
@@ -307,7 +340,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
         }
     }
 }
-
+@@@//
 fun onConfirmation__(allowed: Boolean, resources: Array<String>) {
     // Реализация для Composable
 }

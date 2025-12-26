@@ -48,8 +48,7 @@ object WebViewCache {
     fun get(
         url: String,
         context: Activity,
-
-        isFirstLoad: (Boolean) -> Unit,
+        isLoadFromCache: (Boolean) -> Unit,
         chromeView: ChromeView
     ): WebView {
 
@@ -58,10 +57,10 @@ object WebViewCache {
         println("@@@CACHE: URL exists in cache: $isFromCache")
         if (!isFromCache) {  // Новый WebView
             println("@@@CACHE: Using FRESH WebView")
-            isFirstLoad(true)
+            isLoadFromCache(false)
         } else {  // Из кеша
             println("@@@CACHE: Using CACHED WebView")
-            isFirstLoad(false)
+            isLoadFromCache(true)
         }
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 

@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import android.webkit.WebResourceError
@@ -45,8 +44,7 @@ open class CustomWebViewClient(
     private var receivedError: ReceivedError? = null
 
 
-    private val downloadFileTypes: Array<String> =
-        context.resources.getStringArray(R.array.download_file_types)
+    private val downloadFileTypes: Array<String> = context.resources.getStringArray(R.array.download_file_types)
     private val linksOpenedInExternalBrowser: Array<String> =
         context.resources.getStringArray(R.array.links_opened_in_external_browser)
 
@@ -569,7 +567,7 @@ open class CustomWebViewClient(
         if (HANDLE_ERROR_CODE) {
             val errorOnTheSamePage = isErrorOnTheSamePage(failure.failingUrl)
             val errorCode = failure.errorCode
-            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode ${theerrorisalreadyshown()}")
+            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode ${theErrorisalreadyshown()}")
             //ERR_PROXY_CONNECTION_FAILED, we use Charles
 
 
@@ -579,7 +577,7 @@ open class CustomWebViewClient(
                 }
 
                 (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
-                    if (!theerrorisalreadyshown()) {
+                    if (!theErrorisalreadyshown()) {
                         if (errorOnTheSamePage) {
                             //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
                             //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
@@ -591,7 +589,7 @@ open class CustomWebViewClient(
                 }
 
                 (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT
-                    if (!theerrorisalreadyshown()) {
+                    if (!theErrorisalreadyshown()) {
                         if (errorOnTheSamePage) {
                             //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
                             //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
@@ -602,7 +600,7 @@ open class CustomWebViewClient(
                 }
 
                 (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
-                    if (!theerrorisalreadyshown()) {
+                    if (!theErrorisalreadyshown()) {
                         if (errorOnTheSamePage) {
                             //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
                             //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
@@ -629,9 +627,7 @@ open class CustomWebViewClient(
         return _homeUrl_ != null && _homeUrl_ == failingUrl
     }
 
-    private fun theerrorisalreadyshown(): Boolean {
-        return receivedError != null
-    }
+    private fun theErrorisalreadyshown(): Boolean { return receivedError != null }
 
 
     /**

@@ -30,10 +30,6 @@ import com.lds.wvrss.R
 import net.lds.online.navigation.KnopkaNavHost
 
 
-import net.lds.online.navigation.Screen
-import net.lds.online.ui.components.KnopkaBottomNavigation
-
-
 data class WebViewControls(
     val canGoBack: Boolean,
     val canGoForward: Boolean,
@@ -45,7 +41,7 @@ data class WebViewControls(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KnopkaApp() {
+fun LkApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
