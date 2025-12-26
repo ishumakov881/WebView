@@ -54,6 +54,171 @@ import com.walhalla.webview.utility.ActivityUtils
 
 import net.lds.online.ui.WebViewControls
 
+@Composable
+fun WebViewScreenContent(
+    url: String,
+    onWebViewReady: (WebView) -> Unit,
+    onLoadingChange: (Boolean) -> Unit,
+    onControlsChanged: () -> Unit,
+    onError: (Boolean) -> Unit,
+    onFirstLoadChange: (Boolean) -> Unit
+) {
+    val context = LocalContext.current
+    val activity = context as Activity
+
+    AndroidView(
+        factory = { ctx ->
+            SwipeRefreshLayout(ctx).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                println("@@@@ $childCount")
+
+                if (childCount > 0) {
+                    var tmp = getChildAt(0)
+//                            if(tmp as WebView){
+//
+//                            }
+                }
+//                        if (childCount > 0) {
+//                            removeAllViews()
+//                        }
+
+                // Получаем WebView из кэша
+                val onLoadingChangeLocal: (Boolean) -> Unit = { loading ->
+                    onLoadingChange(loading)
+                    isRefreshing = false
+                }
+
+                val chromView = object : ChromeView {
+
+                    override fun onPageStarted(url: String?) {
+                        onLoadingChangeLocal(true)
+                    }
+
+                    override fun onPageFinished(url: String?) {
+                        onLoadingChangeLocal(false)
+                        onControlsChanged()
+                    }
+
+                    override fun webClientError(failure: ReceivedError) {
+                    }
+
+                    override fun removeErrorPage() {
+                        onError(false)
+                    }
+
+                    override fun setErrorPage(receivedError: ReceivedError) {
+                        onError(true)
+                    }
+
+                    override fun openBrowser(url: String) {
+                        ActivityUtils.openBrowser(context, url)
+                    }
+
+                }
+                val cachedWebView = WebViewCache.get(
+                    url, activity,
+                    //, client
+                    chromeView = chromView,
+                    isFirstLoad = {
+                        println("@@@$it")
+                        onFirstLoadChange(it)
+                        if (it) {
+                            //loadingStartTime = System.currentTimeMillis()
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                if (it) {
+                                    onFirstLoadChange(false)
+                                    onLoadingChange(false)
+                                }
+                            }, 2000)
+                        }
+                    }
+                ).also { webView ->
+                    onWebViewReady(webView)
+                }
+                cachedWebView.alpha = 0.99f
+                // Проверяем, есть ли у WebView родитель
+                (cachedWebView.parent as? ViewGroup)?.removeView(cachedWebView)
+
+                // Добавляем WebView в SwipeRefreshLayout
+                addView(cachedWebView)
+
+                setOnRefreshListener {
+                    cachedWebView.reload()
+                }
+            }
+        },
+        update = { swipeRefresh ->
+            //if (webView?.url != url) {
+            val webView = swipeRefresh.getChildAt(0) as? WebView
+            webView?.loadUrl(url)
+            //}
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+@Composable
+fun FirstLoadIndicator() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+        )
+    }
+}
+
+@Composable
+fun LoadingIndicator() {
+    LinearProgressIndicator(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+    )
+}
+
+@Composable
+fun ErrorContent(onReload: () -> Unit) {
+    val context = LocalContext.current
+    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Нет подключения к интернету",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Проверьте подключение и попробуйте снова",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+
+            Button(
+                onClick = {
+                    context.startActivity(Intent(ACTION_WIRELESS_SETTINGS))
+                }
+            ) {
+                Text("Открыть настройки сети")
+            }
+
+            OutlinedButton(
+                onClick = onReload
+            ) {
+                Text("Повторить")
+            }
+        }
+    }
+}
+
 
 @Composable
 fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
@@ -159,159 +324,29 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
     WebViewCache.fileChooserLauncher = fileChooserLauncher
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            AndroidView(
-                factory = { context ->
-                    SwipeRefreshLayout(context).apply {
-                        layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-                        println("@@@@ $childCount")
-
-                        if (childCount > 0) {
-                            var tmp = getChildAt(0)
-//                            if(tmp as WebView){
-//
-//                            }
-                        }
-//                        if (childCount > 0) {
-//                            removeAllViews()
-//                        }
-
-                        // Получаем WebView из кэша
-
-
-                        val onLoadingChange: (Boolean) -> Unit = { loading ->
-                            isLoading = loading
-                            isRefreshing = false
-                        }
-
-                        val chromView = object : ChromeView {
-
-                            override fun onPageStarted(url: String?) {
-                                onLoadingChange(true)
-                            }
-
-                            override fun onPageFinished(url: String?) {
-                                onLoadingChange(false)
-                                updateControls()
-                            }
-
-                            override fun webClientError(failure: ReceivedError) {
-                            }
-
-                            override fun removeErrorPage() {
-                                switchViews = false
-                            }
-
-                            override fun setErrorPage(receivedError: ReceivedError) {
-                                switchViews = true
-                            }
-
-                            override fun openBrowser(url: String) {
-                                ActivityUtils.openBrowser(context, url)
-                            }
-
-                        }
-                        val cachedWebView = WebViewCache.get(
-                            url, activity,
-                            //, client
-                            chromeView = chromView,
-                            isFirstLoad = {
-                                println("@@@$it")
-                                isFirstLoad = it
-                                if (isFirstLoad) {
-                                    loadingStartTime = System.currentTimeMillis()
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        if (isFirstLoad) {
-                                            isFirstLoad = false
-                                            onLoadingChange(false)
-                                        }
-                                    }, 2000)
-                                }
-                            }
-                        ).also { webView = it }
-                        cachedWebView.alpha = 0.99f
-                        // Проверяем, есть ли у WebView родитель
-                        (cachedWebView.parent as? ViewGroup)?.removeView(cachedWebView)
-
-                        // Добавляем WebView в SwipeRefreshLayout
-                        addView(cachedWebView)
-
-                        setOnRefreshListener {
-                            webView?.reload()
-                        }
-                    }
-                },
-                update = { swipeRefresh ->
-                    //if (webView?.url != url) {
-                    webView?.loadUrl(url)
-                    //}
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        WebViewScreenContent(
+            url = url,
+            onWebViewReady = { webView = it },
+            onLoadingChange = { isLoading = it },
+            onControlsChanged = { updateControls() },
+            onError = { switchViews = it },
+            onFirstLoadChange = { isFirstLoad = it }
+        )
 
         // Показываем анимацию загрузки только при первом запуске, когда WebView еще не создан
         if (isFirstLoad) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                )
-            }
+            FirstLoadIndicator()
         }
 
 
 
         if (isLoading) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-            )
+            LoadingIndicator()
         }
 
         // Показываем сообщение об ошибке
         if (switchViews) {
-            Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = "Нет подключения к интернету",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Text(
-                        text = "Проверьте подключение и попробуйте снова",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(ACTION_WIRELESS_SETTINGS))
-                        }
-                    ) {
-                        Text("Открыть настройки сети")
-                    }
-
-                    OutlinedButton(
-                        onClick = {
-                            webView?.reload()
-                        }
-                    ) {
-                        Text("Повторить")
-                    }
-                }
-            }
+            ErrorContent(onReload = { webView?.reload() })
         }
     }
 }
@@ -319,6 +354,3 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 fun onConfirmation__(allowed: Boolean, resources: Array<String>) {
     // Реализация для Composable
 }
-
-
-
