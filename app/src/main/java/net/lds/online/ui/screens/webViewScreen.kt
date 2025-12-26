@@ -340,7 +340,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
         }
     }
 }
-@@@//
+
 fun onConfirmation__(allowed: Boolean, resources: Array<String>) {
     // Реализация для Composable
 }
