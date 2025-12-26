@@ -26,7 +26,8 @@ import java.util.Locale
 open class CustomWebViewClient(
     webView: WebView,
     private val chromeView: ChromeView?,
-    private val context: Context
+    private val context: Context,
+    private val HANDLE_ERROR_CODE: Boolean = true
 ) :
     WebViewClient() {
     //RequestInspector
@@ -751,7 +752,7 @@ open class CustomWebViewClient(
         const val TAG: String = "@@@"
 
         private const val STATUS_CODE_UNKNOWN = 9999
-        private const val HANDLE_ERROR_CODE = true
+
 
         private const val isConnected = true
 

@@ -36,11 +36,15 @@ import android.provider.Settings.ACTION_WIRELESS_SETTINGS
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
@@ -261,6 +265,9 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
                 )
             }
         }
+
+
+
         if (isLoading) {
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
@@ -270,12 +277,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
         // Показываем сообщение об ошибке
         if (switchViews) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
