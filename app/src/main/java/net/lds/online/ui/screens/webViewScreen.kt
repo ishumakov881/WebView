@@ -294,6 +294,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
                 when (it) {
                     is LoadState.OnPageFinished -> {
                         isLoading = false
+                        isFirstLoad = false
                     }
 
                     is LoadState.OnPageStarted -> {
@@ -312,7 +313,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 //                        //loadingStartTime = System.currentTimeMillis()
 //                        Handler(Looper.getMainLooper()).postDelayed({
 //                            isFirstLoad = false
-//                            //@@@ onLoadingChange(false)
+//                            onLoadingChange(false)
 //                        }, 2000)
                     }
                     VWState.FromCache -> {
@@ -322,10 +323,6 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
             }
         )
 
-        // Показываем анимацию загрузки только при первом запуске, когда WebView еще не создан
-        if (isFirstLoad) {
-            FirstLoadIndicator()
-        }
 
         if (isLoading) {
             LoadingIndicator()
@@ -337,6 +334,11 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
                 webView?.reload()
                 //Toast.makeText(context, "${webView?.url}", Toast.LENGTH_SHORT).show()
             })
+        }
+
+        // Показываем анимацию загрузки только при первом запуске, когда WebView еще не создан
+        if (isFirstLoad) {
+            FirstLoadIndicator()
         }
     }
 }
