@@ -1,12 +1,9 @@
 package net.lds.online.ui.screens
 
 import android.app.Activity
-import android.content.Intent
-import android.graphics.Color
 import android.webkit.WebView
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -32,22 +29,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import net.walhalla.landing.activity.DLog.d
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings.ACTION_WIRELESS_SETTINGS
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Text
+import android.widget.Toast
 
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.TextAlign
+import com.walhalla.nointernet.Text
 import com.walhalla.webview.ChromeView
 import com.walhalla.webview.ReceivedError
 import com.walhalla.webview.utility.ActivityUtils
@@ -65,99 +52,105 @@ fun WebViewScreenContent(
 ) {
     val context = LocalContext.current
     val activity = context as Activity
+    var errorMessage by remember { mutableStateOf("") }
 
-    AndroidView(
-        factory = { ctx ->
-            SwipeRefreshLayout(ctx).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                println("@@@@ $childCount")
+    Box{
+        AndroidView(
+            factory = { ctx ->
+                SwipeRefreshLayout(ctx).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    println("@@@@ $childCount")
 
-                if (childCount > 0) {
-                    var tmp = getChildAt(0)
+                    if (childCount > 0) {
+                        var tmp = getChildAt(0)
 //                            if(tmp as WebView){
 //
 //                            }
-                }
+                    }
 //                        if (childCount > 0) {
 //                            removeAllViews()
 //                        }
 
-                // Получаем WebView из кэша
-                val onLoadingChangeLocal: (Boolean) -> Unit = { loading ->
-                    onLoadingChange(loading)
-                    isRefreshing = false
-                }
-
-                val chromView = object : ChromeView {
-
-                    override fun onPageStarted(url: String?) {
-                        onLoadingChangeLocal(true)
+                    // Получаем WebView из кэша
+                    val onLoadingChangeLocal: (Boolean) -> Unit = { loading ->
+                        onLoadingChange(loading)
+                        isRefreshing = false
                     }
 
-                    override fun onPageFinished(url: String?) {
-                        onLoadingChangeLocal(false)
-                        onControlsChanged()
-                    }
+                    val chromView = object : ChromeView {
 
-                    override fun webClientError(failure: ReceivedError) {
-                    }
-
-                    override fun removeErrorPage() {
-                        onError(false)
-                    }
-
-                    override fun setErrorPage(receivedError: ReceivedError) {
-                        onError(true)
-                    }
-
-                    override fun openBrowser(url: String) {
-                        ActivityUtils.openBrowser(context, url)
-                    }
-
-                }
-                val cachedWebView = WebViewCache.get(
-                    url, activity,
-                    //, client
-                    chromeView = chromView,
-                    isFirstLoad = {
-                        println("@@@$it")
-                        onFirstLoadChange(it)
-                        if (it) {
-                            //loadingStartTime = System.currentTimeMillis()
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                if (it) {
-                                    onFirstLoadChange(false)
-                                    onLoadingChange(false)
-                                }
-                            }, 2000)
+                        override fun onPageStarted(url: String?) {
+                            onLoadingChangeLocal(true)
                         }
+
+                        override fun onPageFinished(url: String?) {
+                            onLoadingChangeLocal(false)
+                            onControlsChanged()
+                        }
+
+                        override fun webClientError(failure: ReceivedError) {
+                            errorMessage = failure.toString()
+                        }
+
+                        override fun removeErrorPage() {
+                            onError(false)
+                        }
+
+                        override fun setErrorPage(receivedError: ReceivedError) {
+                            onError(true)
+                        }
+
+                        override fun openBrowser(url: String) {
+                            ActivityUtils.openBrowser(context, url)
+                        }
+
                     }
-                ).also { webView ->
-                    onWebViewReady(webView)
-                }
-                cachedWebView.alpha = 0.99f
-                // Проверяем, есть ли у WebView родитель
-                (cachedWebView.parent as? ViewGroup)?.removeView(cachedWebView)
+                    val cachedWebView = WebViewCache.get(
+                        url, activity,
+                        //, client
+                        chromeView = chromView,
+                        isFirstLoad = {
+                            println("@@@$it")
+                            onFirstLoadChange(it)
+                            if (it) {
+                                //loadingStartTime = System.currentTimeMillis()
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    if (it) {
+                                        onFirstLoadChange(false)
+                                        onLoadingChange(false)
+                                    }
+                                }, 2000)
+                            }
+                        }
+                    ).also { webView ->
+                        onWebViewReady(webView)
+                    }
+                    cachedWebView.alpha = 0.99f
+                    // Проверяем, есть ли у WebView родитель
+                    (cachedWebView.parent as? ViewGroup)?.removeView(cachedWebView)
 
-                // Добавляем WebView в SwipeRefreshLayout
-                addView(cachedWebView)
+                    // Добавляем WebView в SwipeRefreshLayout
+                    addView(cachedWebView)
 
-                setOnRefreshListener {
-                    cachedWebView.reload()
+                    setOnRefreshListener {
+                        cachedWebView.reload()
+                    }
                 }
-            }
-        },
-        update = { swipeRefresh ->
-            //if (webView?.url != url) {
-            val webView = swipeRefresh.getChildAt(0) as? WebView
-            webView?.loadUrl(url)
-            //}
-        },
-        modifier = Modifier.fillMaxSize()
-    )
+            },
+            update = { swipeRefresh ->
+                //if (webView?.url != url) {
+                val webView = swipeRefresh.getChildAt(0) as? WebView
+                webView?.loadUrl(url)
+                //}
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Text("@ $errorMessage")
+    }
 }
 
 @Composable
@@ -181,44 +174,6 @@ fun LoadingIndicator() {
     )
 }
 
-@Composable
-fun ErrorContent(onReload: () -> Unit) {
-    val context = LocalContext.current
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = "Нет подключения к интернету",
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = "Проверьте подключение и попробуйте снова",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-
-            Button(
-                onClick = {
-                    context.startActivity(Intent(ACTION_WIRELESS_SETTINGS))
-                }
-            ) {
-                Text("Открыть настройки сети")
-            }
-
-            OutlinedButton(
-                onClick = onReload
-            ) {
-                Text("Повторить")
-            }
-        }
-    }
-}
-
 
 @Composable
 fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
@@ -235,7 +190,6 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
     val context = LocalContext.current
     val activity = context as Activity
-
 
 
     //val handler = rememberUpdatedState(onControlsChanged)
@@ -346,7 +300,10 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
         // Показываем сообщение об ошибке
         if (switchViews) {
-            ErrorContent(onReload = { webView?.reload() })
+            ErrorContent(isLoading = isLoading, onReload = {
+                webView?.reload()
+                //Toast.makeText(context, "${webView?.url}", Toast.LENGTH_SHORT).show()
+            })
         }
     }
 }

@@ -565,44 +565,57 @@ open class CustomWebViewClient(
 
     private fun handleErrorCode(webView: WebView, failure: ReceivedError) {
         if (HANDLE_ERROR_CODE) {
+            val errorOnTheSamePage = isErrorOnTheSamePage(failure.failingUrl)
+            val errorCode = failure.errorCode
+            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode")
             //ERR_PROXY_CONNECTION_FAILED, we use Charles
+            
 
-            val prError = (failure.errorCode == ERROR_PROXY_AUTHENTICATION)
-            if (prError) {
-                setErrorPage(failure)
-            } else if (failure.errorCode == ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) { //-2 ERR_NAME_NOT_RESOLVED
-                if (!theerrorisalreadyshown()) {
-                    if (isErrorOnTheSamePage(failure.failingUrl)) {
-                        //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                        //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                        setErrorPage(failure)
-                        //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
-                    }
+            when(errorCode){
+                (ERROR_PROXY_AUTHENTICATION) ->{
+                    setErrorPage(failure)
                 }
-                webClientError(failure)
-            } else if (failure.errorCode == ERROR_TIMEOUT) { //-8 ERR_CONNECTION_TIMED_OUT
-                if (!theerrorisalreadyshown()) {
-                    if (isErrorOnTheSamePage(failure.failingUrl)) {
-                        //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                        //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                        setErrorPage(failure)
+                (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) ->{ //-2 ERR_NAME_NOT_RESOLVED
+                    if (!theerrorisalreadyshown()) {
+                        if (errorOnTheSamePage) {
+                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                            setErrorPage(failure)
+                            //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
+                        }
                     }
+                    webClientError(failure)
                 }
-                webClientError(failure)
-            } else if (failure.errorCode == ERROR_CONNECT) { // -6	net::ERR_CONNECTION_REFUSED
-                if (!theerrorisalreadyshown()) {
-                    if (isErrorOnTheSamePage(failure.failingUrl)) {
-                        //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                        //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                        setErrorPage(failure)
+                (ERROR_TIMEOUT) ->{ //-8 ERR_CONNECTION_TIMED_OUT
+                    if (!theerrorisalreadyshown()) {
+                        if (errorOnTheSamePage) {
+                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                            setErrorPage(failure)
+                        }
                     }
+                    webClientError(failure)
                 }
-                webClientError(failure)
-            } else if (failure.errorCode != -14) { // -14 is error for file not found, like 404.
-                webClientError(failure)
+                (ERROR_CONNECT) ->{ // -6	net::ERR_CONNECTION_REFUSED
+                    if (!theerrorisalreadyshown()) {
+                        if (errorOnTheSamePage) {
+                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                            setErrorPage(failure)
+                        }
+                    }
+                    webClientError(failure)
+                }
+
+                (-14)-> { // -14 is error for file not found, like 404.
+                 //Skip
+                }
+                else -> {
+                    webClientError(failure)
+                }
+                //ERR_CONNECTION_REFUSED
+                //ERR_CONNECTION_RESET
             }
-            //ERR_CONNECTION_REFUSED
-            //ERR_CONNECTION_RESET
         }
     }
 
@@ -664,25 +677,24 @@ open class CustomWebViewClient(
     }
 
     private fun webClientError(failure: ReceivedError) {
-        val view = chromeView
-        if (nonNull(view)) {
-            view?.webClientError(failure)
+        if (nonNull(chromeView)) {
+            chromeView?.webClientError(failure)
         }
     }
 
     private fun setErrorPage(newValue: ReceivedError) {
-        println(TAG + "@@@@")
+        println(TAG + "$receivedError")
         //isErrorPageShown0 = true;
         receivedError = newValue
-        val view = chromeView
-        if (nonNull(view)) {
-            view?.setErrorPage(newValue)
+        
+        if (nonNull(chromeView)) {
+            chromeView?.setErrorPage(newValue)
         }
         //isErrorPageShown0 = false;
     }
 
     private fun nonNull(o: Any?): Boolean {
-        println(TAG + "Nonnull" + (if ((o != null)) o.javaClass.canonicalName else null))
+        println(TAG + "Nonnull: " + (o?.javaClass?.canonicalName))
         return o != null
     }
 
@@ -749,7 +761,7 @@ open class CustomWebViewClient(
 
     companion object {
         private const val KEY_ERROR_ = "about:blank0error"
-        const val TAG: String = "@@@"
+        const val TAG: String = "cwvc"
 
         private const val STATUS_CODE_UNKNOWN = 9999
 

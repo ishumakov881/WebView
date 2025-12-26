@@ -589,7 +589,7 @@
 //    }
 //
 //    private fun webClientError(failure: ReceivedError) {
-//        val view = chromeView
+//        
 //        if (nonNull(view)) {
 //            view.webClientError(failure)
 //        }
@@ -599,7 +599,7 @@
 //        Log.d(TAG, "@@@@")
 //        //isErrorPageShown0 = true;
 //        receivedError = newValue
-//        val view = chromeView
+//        
 //        if (nonNull(view)) {
 //            view.setErrorPage(receivedError)
 //        }
