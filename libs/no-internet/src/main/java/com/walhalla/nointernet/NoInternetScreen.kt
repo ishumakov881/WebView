@@ -1,16 +1,26 @@
-package net.lds.online.ui
+package com.walhalla.nointernet
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,13 +28,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,43 +45,53 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import net.lds.online.R
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun NoInternetScreen(openFullDialogCustom: MutableState<Boolean>) {
+fun NoInternetScreen(onDismiss: ()-> Unit) {
 
-    if (openFullDialogCustom.value) {
+    //NoInternetPendulumAnimation()
 
-        // Dialog function
-        Dialog(
-            onDismissRequest = {
-                openFullDialogCustom.value = false
-            },
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false // experimental
-            )
-        ) {
-            Surface(modifier = Modifier.fillMaxSize()) {
+    // Dialog function
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false // experimental
+        )
+    ) {
+        Surface(modifier = Modifier.fillMaxSize()) {
 
+           Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+
+
+                NoInternetSignalAnimation(
+                    modifier = Modifier,//.border(2.dp, Color.Red),
+                    isAirplaneModeOn = true
+                )
+
+//                Image(
+//                    painter = painterResource(id = R.drawable.ic_no_internet_no_bg),
+//                    //painter = painterResource(id = R.drawable.ic_no_wifi_2),
+//
+//
+//                    contentDescription = null,
+//                    contentScale = ContentScale.Fit,
+//                    modifier = Modifier
+//                        .height(200.dp)
+//                        .fillMaxWidth(),
+//
+//                    )
+
+                Spacer(modifier = Modifier.height(20.dp))
                 Column(
-                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_no_internet_no_bg),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .height(200.dp)
-                            .fillMaxWidth(),
-
-                        )
-
-                    Spacer(modifier = Modifier.height(20.dp))
+                    horizontalAlignment = Alignment.CenterHorizontally) {
                     //.........................Text: title
                     Text(
                         text = "Whoops!!",
@@ -101,21 +122,75 @@ fun NoInternetScreen(openFullDialogCustom: MutableState<Boolean>) {
 
                     val cornerRadius = 16.dp
                     val gradientColor = listOf(Color(0xFFff669f), Color(0xFFff8961))
+
                     GradientButton(
                         gradientColors = gradientColor,
                         cornerRadius = cornerRadius,
                         nameButton = "Try again",
                         roundedCornerShape = RoundedCornerShape(topStart = 30.dp,bottomEnd = 30.dp),
-                        openFullDialogCustom
+                        onClick = onDismiss
                     )
-
                 }
 
             }
-        }
 
+        }
     }
 }
+
+@Composable
+fun NoInternetPendulumAnimation(
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pendulum")
+
+    // Анимация вращения
+    val rotation by infiniteTransition.animateValue(
+        initialValue = -15f,
+        targetValue = 15f,
+        typeConverter = Float.VectorConverter,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "rotation"
+    )
+
+    // Анимация перемещения
+    val translationX by infiniteTransition.animateValue(
+        initialValue = (-16).dp,
+        targetValue = 16.dp,
+        typeConverter = Dp.VectorConverter,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "translation"
+    )
+
+    Box(
+        modifier = modifier.size(128.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Иконка ic_no_wifi_2, которая вращается (соответствует no_internet_img_1)
+        Image(
+            painter = painterResource(id = R.drawable.ic_no_wifi_2),
+            contentDescription = null,
+            modifier = Modifier.graphicsLayer {
+                this.rotationZ = rotation
+            }
+        )
+        // Иконка ic_no_wifi_1, которая перемещается (соответствует no_internet_img_2)
+        Image(
+            painter = painterResource(id = R.drawable.ic_no_wifi_1),
+            contentDescription = null,
+            modifier = Modifier.graphicsLayer {
+                this.translationX = translationX.toPx()
+            }
+        )
+    }
+}
+
 //...........................................................................
 @Composable
 fun GradientButton(
@@ -123,16 +198,14 @@ fun GradientButton(
     cornerRadius: Dp,
     nameButton: String,
     roundedCornerShape: RoundedCornerShape,
-    openFullDialogCustom: MutableState<Boolean>
+    onClick: ()-> Unit
 ) {
 
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 32.dp, end = 32.dp),
-        onClick = {
-            openFullDialogCustom.value = false
-        },
+        onClick = onClick,
 
         contentPadding = PaddingValues(),
         colors = ButtonDefaults.buttonColors(
@@ -164,3 +237,4 @@ fun GradientButton(
         }
     }
 }
+

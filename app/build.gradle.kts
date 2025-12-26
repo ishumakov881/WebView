@@ -118,6 +118,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(project(":wvcore"))
     implementation(project(":wvrss"))
+    implementation(project(":libs:no-internet"))
 
     // SwipeRefreshLayout
     implementation(libs.androidx.swiperefreshlayout)
@@ -148,4 +149,5 @@ dependencies {
     implementation(libs.onesignal)
     implementation(libs.accompanist.webview)
     implementation(libs.google.firebase.crashlytics)
+    implementation(libs.connectivity.kmp)
 } 

@@ -1,28 +1,57 @@
 package net.lds.online.ui
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.walhalla.nointernet.NoInternetScreen
+
+import my.connectivity.kmp.data.model.NetworkStatus
+import my.connectivity.kmp.rememberNetworkStatus
 import net.lds.online.ui.theme.AppTheme
 
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Правильная обработка инсетов для edge-to-edge дизайна
         //WindowCompat.setDecorFitsSystemWindows(window, false)
-        
+
         setContent {
             AppTheme {
 
-                KnopkaApp()
+                val openFullDialogCustom = remember { mutableStateOf(false) }
+                val isNetworkAvailable by rememberNetworkStatus()
 
-//                val openFullDialogCustom = remember { mutableStateOf(false) }
-//
+                Box {
+                    when (isNetworkAvailable) {
+                        NetworkStatus.Available -> {
+                            openFullDialogCustom.value = false
+                        }
+                        NetworkStatus.Losing,
+                        NetworkStatus.Lost,
+                        NetworkStatus.Unavailable,
+                        NetworkStatus.NoInternet -> {
+                            openFullDialogCustom.value = true
+                        }
+                        NetworkStatus.Slow -> {}
+                    }
+                    KnopkaApp()
+
+                    Text("@@@@ $isNetworkAvailable")
+
+                }
+
 //                // A surface container using the 'background' color from the theme
 //                Surface(
 //                    modifier = Modifier.fillMaxSize(),
@@ -49,8 +78,13 @@ class MainActivity : ComponentActivity() {
 //                }
                 //...............................................................................
                 //Full screen Custom Dialog Sample
-                //NoInternetScreen(openFullDialogCustom)
+                //if (openFullDialogCustom.value) {
+                NoInternetScreen(onDismiss = {
+                    openFullDialogCustom.value = false
+                })
+                //}
             }
+
         }
     }
 } 

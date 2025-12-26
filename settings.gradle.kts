@@ -33,3 +33,4 @@ include(":wvrss")
 
 include(":features:webview")
 project(":features:webview").projectDir = File("webview")
+include(":libs:no-internet")
