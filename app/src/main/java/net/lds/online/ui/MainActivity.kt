@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Правильная обработка инсетов для edge-to-edge дизайна
         //WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     }
                     KnopkaApp()
 
-                    Text("@@@@ $isNetworkAvailable")
+                    //Text("@@@@ $isNetworkAvailable")
 
                 }
 
@@ -78,11 +77,10 @@ class MainActivity : ComponentActivity() {
 //                }
                 //...............................................................................
                 //Full screen Custom Dialog Sample
-                //if (openFullDialogCustom.value) {
-                NoInternetScreen(onDismiss = {
+                if (openFullDialogCustom.value) { NoInternetScreen(onDismiss = {
                     openFullDialogCustom.value = false
                 })
-                //}
+                }
             }
 
         }

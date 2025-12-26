@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/libs" />
+            <option value="$PROJECT_DIR$/libs/no-internet" />
             <option value="$PROJECT_DIR$/webview" />
             <option value="$PROJECT_DIR$/wvcore" />
             <option value="$PROJECT_DIR$/wvrss" />

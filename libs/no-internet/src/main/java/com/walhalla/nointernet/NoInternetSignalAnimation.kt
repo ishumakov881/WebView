@@ -65,9 +65,9 @@ fun NoInternetSignalAnimation(
         )
 
         // 3. Анимация облаков
-        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_1)
-        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_2)
-        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_3)
+        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_1, yOffset = (-24).dp)
+        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_2, yOffset = (-29).dp)
+        Cloud(parentWidth = maxWidth, iconRes = R.drawable.ic_cloud_3, yOffset = (-34).dp)
 
         // 4. Анимация самолета (если нужно)
         if (isAirplaneModeOn) {
@@ -109,11 +109,9 @@ private fun SignalCircle(startDelay: Int) {
 }
 
 @Composable
-private fun Cloud(parentWidth: Dp, iconRes: Int) {
-    // Используем `remember` для генерации случайных значений только один раз
+private fun Cloud(parentWidth: Dp, iconRes: Int, yOffset: Dp) {
     val randomDuration = remember { Random.nextLong(8000, 16000) }
     val randomStartDelay = remember { Random.nextInt(0, 5000) }
-    val randomYOffset = remember { Random.nextInt(-20, 20).dp }
 
     val infiniteTransition = rememberInfiniteTransition(label = "cloud")
 
@@ -135,7 +133,7 @@ private fun Cloud(parentWidth: Dp, iconRes: Int) {
         painter = painterResource(id = iconRes),
         contentDescription = null,
         modifier = Modifier
-            .offset(x = translationX, y = randomYOffset)
+            .offset(x = translationX, y = yOffset)
             .size(32.dp)
     )
 }
@@ -144,18 +142,18 @@ private fun Cloud(parentWidth: Dp, iconRes: Int) {
 private fun Airplane(parentWidth: Dp) {
     val infiniteTransition = rememberInfiniteTransition(label = "airplane")
 
-    // Анимация перемещения
+    // Анимация перемещения по X
     val translationX by infiniteTransition.animateValue(
         initialValue = -parentWidth * 0.6f,
         targetValue = parentWidth * 0.6f,
         typeConverter = Dp.VectorConverter,
         animationSpec = infiniteRepeatable(
             animation = tween(7000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
+            repeatMode = RepeatMode.Restart
         ), label = "airplane_translation"
     )
 
-    // Анимация масштаба и прозрачности (у них одна длительность)
+    // Анимация масштаба и прозрачности
     val pulse by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 0.6f,
@@ -170,12 +168,12 @@ private fun Airplane(parentWidth: Dp) {
         contentDescription = null,
         modifier = Modifier
             .size(24.dp)
-            .offset(x = translationX)
+            .offset(x = translationX, y = (-28).dp) // <-- Добавлено фиксированное смещение по Y
             .graphicsLayer {
-                rotationZ = 90f // Поворот как в оригинале
+                rotationZ = 90f
                 scaleX = pulse
                 scaleY = pulse
-                alpha = pulse // Alpha меняется вместе с масштабом
+                alpha = pulse
             }
     )
 }
