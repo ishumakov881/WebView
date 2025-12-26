@@ -176,12 +176,7 @@ fun FirstLoadIndicator() {
 }
 
 @Composable
-fun LoadingIndicator() {
-    LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-    )
-}
+fun LoadingIndicator() = LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
 
 
 @Composable
