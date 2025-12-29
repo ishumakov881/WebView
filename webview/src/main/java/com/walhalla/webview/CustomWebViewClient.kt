@@ -22,16 +22,24 @@ import com.walhalla.webview.utility.DownloadUtility
 import java.io.ByteArrayInputStream
 import java.util.Locale
 
+
+sealed class WebUiState {
+    object Content : WebUiState()
+    data class Error(val error: ReceivedError) : WebUiState()
+}
+
 open class CustomWebViewClient(
     webView: WebView,
-    private val chromeView: ChromeView?,
+    private val chromeView: ChromeView, /*?*/
     private val context: Context,
     private val HANDLE_ERROR_CODE: Boolean = true
 ) :
     WebViewClient() {
     //RequestInspector
     private var blockedDomains0: MutableList<String> = mutableListOf<String>()
-
+    private val authEndpoints = listOf(
+        "/api/auth/login", "/login?redirect=/"
+    )
 
     init {
         blockedDomains0 = WVTools.loadBlockedDomains(context, R.raw.blockedhost).toMutableList()
@@ -40,11 +48,11 @@ open class CustomWebViewClient(
         }
     }
 
+    private var uiState: WebUiState = WebUiState.Content
 
-    private var receivedError: ReceivedError? = null
 
-
-    private val downloadFileTypes: Array<String> = context.resources.getStringArray(R.array.download_file_types)
+    private val downloadFileTypes: Array<String> =
+        context.resources.getStringArray(R.array.download_file_types)
     private val linksOpenedInExternalBrowser: Array<String> =
         context.resources.getStringArray(R.array.links_opened_in_external_browser)
 
@@ -59,9 +67,9 @@ open class CustomWebViewClient(
     private var feature_same_domain_enabled = true
 
 
-    fun resetAllErrors() {
-        receivedError = null
-    }
+//    fun resetAllErrors() {
+//        receivedError = null
+//    }
 
     fun setHomeUrl(homeUrl: String?) {
         this._homeUrl_ = homeUrl
@@ -81,25 +89,33 @@ open class CustomWebViewClient(
         super.onPageStarted(view, url, favicon)
     }
 
+
+    //var oldValue: ReceivedError? = null
+
     override fun onPageFinished(view: WebView, url: String) {
         super.onPageFinished(view, url)
-        if (BuildConfig.DEBUG) {
-            DebugTools.printParams("<onPageFinished>", url)
-        }
-        //        if (BuildConfig.DEBUG) {
+
+//        if (BuildConfig.DEBUG) {
 //            int scale = (int) (100 * view.getScale());
 //            println(TAG + "[" + url + "], {Scale}->" + scale + ", " + receivedError);
 //        }
         val activity = this.chromeView
 
         //error is fixed
-        if (oldValue != null && receivedError == null) {
-            activity?.removeErrorPage()
+        when (uiState) {
+            WebUiState.Content -> {
+                println("<onPageFinished> $url @@ ${(uiState)}")
+            }
+
+            is WebUiState.Error -> {
+                val errorUrl = (uiState as WebUiState.Error).error
+                println("<onPageFinished> $url @@ ${errorUrl}")
+                if (errorUrl.equals(url)) {
+                    uiState = WebUiState.Content
+                    chromeView.removeErrorPage()
+                }
+            }
         }
-
-        oldValue = receivedError //set
-        receivedError = null //reset error
-
         if (KEY_ERROR_ == url) {
             view.clearHistory()
         }
@@ -243,7 +259,7 @@ open class CustomWebViewClient(
 
     @Deprecated("")
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        println(TAG + "@@@. $url")
+        println("$TAG@@@. $url")
         return handleUrl(view, url)
     }
 
@@ -560,16 +576,15 @@ open class CustomWebViewClient(
         }
     }
 
-
-    var oldValue: ReceivedError? = null
-
     private fun handleErrorCode(webView: WebView, failure: ReceivedError) {
         if (HANDLE_ERROR_CODE) {
-            val errorOnTheSamePage = isErrorOnTheSamePage(failure.failingUrl)
+            val theErrorisalreadyshown = uiState is WebUiState.Error
+            val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
             val errorCode = failure.errorCode
-            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode ${theErrorisalreadyshown()}")
+            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
             //ERR_PROXY_CONNECTION_FAILED, we use Charles
-
+            if (theErrorisalreadyshown) return
+            if (!errorOnTheSamePage) return
 
             when (errorCode) {
                 (ERROR_PROXY_AUTHENTICATION) -> {
@@ -577,36 +592,25 @@ open class CustomWebViewClient(
                 }
 
                 (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
-                    if (!theErrorisalreadyshown()) {
-                        if (errorOnTheSamePage) {
-                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                            setErrorPage(failure)
-                            //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                    setErrorPage(failure)
+                    //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
                     webClientError(failure)
                 }
 
-                (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT
-                    if (!theErrorisalreadyshown()) {
-                        if (errorOnTheSamePage) {
-                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                            setErrorPage(failure)
-                        }
-                    }
+                (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT @@ -8 aka ERR_CONNECTION_RESET
+                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                    setErrorPage(failure)
                     webClientError(failure)
                 }
+
 
                 (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
-                    if (!theErrorisalreadyshown()) {
-                        if (errorOnTheSamePage) {
-                            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                            setErrorPage(failure)
-                        }
-                    }
+                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+                    setErrorPage(failure)
                     webClientError(failure)
                 }
 
@@ -615,19 +619,26 @@ open class CustomWebViewClient(
                 }
 
                 else -> {
+                    setErrorPage(failure)
                     webClientError(failure)
                 }
                 //ERR_CONNECTION_REFUSED
-                //ERR_CONNECTION_RESET
+
             }
         }
     }
 
-    private fun isErrorOnTheSamePage(failingUrl: String): Boolean {
-        return _homeUrl_ != null && _homeUrl_ == failingUrl
-    }
 
-    private fun theErrorisalreadyshown(): Boolean { return receivedError != null }
+    private fun isErrorOnMainPage(failingUrl: String): Boolean {
+        println("{isErrorOnMainPage} $_homeUrl_ $failingUrl")
+        val homeUrl = _homeUrl_ ?: return false
+        return homeUrl == failingUrl || authEndpoints.any {
+            failingUrl.endsWith(
+                it,
+                ignoreCase = true
+            )
+        }
+    }
 
 
     /**
@@ -644,30 +655,37 @@ open class CustomWebViewClient(
     ) {
         super.onReceivedError(view, request, error)
 
-        //                loadErrorPage(privacy);
+//                loadErrorPage(privacy);
 
 //        if (BuildConfig.DEBUG) {
 //                Toast.makeText(privacy.getContext(), "Oh no! " + request + " " + error, Toast.LENGTH_SHORT)
 //                        .show();
 //        }
-        val failureUrl = request.url.toString()
 
+        val failingUrl = request.url.toString()
         val mainUrl = view.url ?: ""
+        val errorOnTheSamePage = mainUrl == failingUrl || authEndpoints.any {
+            failingUrl.endsWith(
+                it,
+                ignoreCase = true
+            )
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             println(TAG + "!! @@@ >= 23" + error.errorCode + "\t" + error.description)
-            println("$TAG!! @@@: $mainUrl {FailUrl} $failureUrl")
+            println("$TAG!! @@@: $mainUrl {FailUrl} $failingUrl")
 
-            if (mainUrl == failureUrl) {
+            if (errorOnTheSamePage) {
                 println(TAG + "URL: $mainUrl")
                 val err0 = ReceivedError(
                     error.errorCode,
                     error.description.toString(),
-                    failureUrl
+                    failingUrl
                 )
                 handleErrorCode(view, err0)
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (mainUrl == failureUrl) {
+            if (errorOnTheSamePage) {
                 println(
                     TAG + "[onReceived--HttpError >= 21 ] " + error + " " + request.url + " " + view.url
                 )
@@ -679,26 +697,21 @@ open class CustomWebViewClient(
     }
 
     private fun webClientError(failure: ReceivedError) {
-        if (nonNull(chromeView)) {
-            chromeView?.webClientError(failure)
-        }
+        chromeView.webClientError(failure)
     }
 
     private fun setErrorPage(newValue: ReceivedError) {
-        println(TAG + "$receivedError")
+        println("$TAG $uiState :: $newValue")
         //isErrorPageShown0 = true;
-        receivedError = newValue
-
-        if (nonNull(chromeView)) {
-            chromeView?.setErrorPage(newValue)
-        }
+        uiState = WebUiState.Error(newValue)
+        chromeView.setErrorPage(newValue)
         //isErrorPageShown0 = false;
     }
 
-    private fun nonNull(o: Any?): Boolean {
-        println(TAG + "Nonnull: " + (o?.javaClass?.canonicalName))
-        return o != null
-    }
+//    private fun nonNull(o: Any?): Boolean {
+//        println(TAG + "Nonnull: " + (o?.javaClass?.canonicalName))
+//        return o != null
+//    }
 
     @SuppressLint("ObsoleteSdkInt")
     override fun onReceivedHttpError(

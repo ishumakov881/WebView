@@ -37,6 +37,7 @@ swiperefreshlayout = "1.1.0"
 transportApi = "4.0.0"
 appcompat = "1.7.1"
 material = "1.13.0"
+material3 = "1.4.0"
 [libraries]
 
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
@@ -92,6 +93,7 @@ core = { module = "androidx.core:core", version.ref = "core" }
 transport-api = { group = "com.google.android.datatransport", name = "transport-api", version.ref = "transportApi" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 [plugins]
 
 android-application = { id = "com.android.application", version.ref = "agp" }

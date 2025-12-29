@@ -125,6 +125,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(project(":features:webview"))
     implementation(libs.transport.api)
+    implementation(libs.material3)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

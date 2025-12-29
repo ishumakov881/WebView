@@ -2,14 +2,18 @@ package net.lds.online.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.lds.webview.BuildConfig
 import com.walhalla.nointernet.NoInternetScreen
 
 import my.connectivity.kmp.data.model.NetworkStatus
@@ -24,7 +28,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         //WindowCompat.setDecorFitsSystemWindows(window, false)
-
+       if(BuildConfig.DEBUG){
+           window.addFlags( //WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or //WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+               WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+           )
+       }
         setContent {
             AppTheme {
 
@@ -46,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     }
                     LkApp()
 
-                    //Text("@@@@ $isNetworkAvailable")
+                    //Text(color = Color.Red, text = "@@@@ $isNetworkAvailable")
 
                 }
 

@@ -30,8 +30,11 @@ import net.walhalla.landing.activity.DLog.d
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import com.walhalla.nointernet.Text
 import com.walhalla.webview.ChromeView
@@ -66,17 +69,29 @@ fun WebViewScreenContent(
     var errorMessage by remember { mutableStateOf("") }
 
     Box {
+
+//        PullToRefreshBox(
+//            isRefreshing = isRefreshing, // Indicates if the loading indicator should be shown
+//            onRefresh = onRefresh,     // The action to perform when the user triggers a refresh
+//            modifier = modifier
+//        ) {
+//            LazyColumn(Modifier.fillMaxSize()) {
+//                items(items.size) { index ->
+//                    ListItem(headlineContent = { Text(text = items[index]) })
+//                }
+//            }
+//        }
+
         AndroidView(
             factory = { ctx ->
                 SwipeRefreshLayout(ctx).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     println("@@@@ $childCount")
 
                     if (childCount > 0) {
-                        var tmp = getChildAt(0)
+                        val tmp = getChildAt(0)
 //                            if(tmp as WebView){
 //
 //                            }
@@ -111,6 +126,7 @@ fun WebViewScreenContent(
 
                         override fun webClientError(failure: ReceivedError) {
                             errorMessage = failure.toString()
+                            onError(true)
                         }
 
                         override fun removeErrorPage() {
@@ -184,7 +200,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
     var isLoading by remember { mutableStateOf(false) }
 
-    var switchViews by remember { mutableStateOf(false) }
+    var switchViews by rememberSaveable { mutableStateOf(false) }
 
     var isFirstLoad by remember { mutableStateOf(true) }
     var loadingStartTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -299,7 +315,9 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
             },
             onControlsChanged = { updateControls() },
-            onError = { switchViews = it },
+            onError = {
+                switchViews = it
+            },
 
             onWVCreated = {
                 when(it){
@@ -335,6 +353,8 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
         if (isFirstLoad) {
             FirstLoadIndicator()
         }
+
+
     }
 }
 
