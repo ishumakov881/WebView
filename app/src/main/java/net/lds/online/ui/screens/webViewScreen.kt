@@ -79,22 +79,22 @@ fun WebViewScreenContent(
 
     Box(modifier = Modifier.fillMaxSize()/*.windowInsetsPadding(WindowInsets.systemBars).border(3.dp, Color.Red)*/) {
 
-        val isRefreshing = true
-        val onRefresh: () -> Unit = {}
-        PullToRefreshBox(
-            isRefreshing = isRefreshing, // Indicates if the loading indicator should be shown
-            onRefresh = onRefresh,     // The action to perform when the user triggers a refresh
-            modifier = Modifier
-        ) {
-            LazyColumn(Modifier.fillMaxSize()) {
-                items(22) { index ->
-                    ListItem(headlineContent = { Text(text = "@@@") })
-                }
-            }
-        }
+//        val isRefreshing = true
+//        val onRefresh: () -> Unit = {}
+//        PullToRefreshBox(
+//            isRefreshing = isRefreshing, // Indicates if the loading indicator should be shown
+//            onRefresh = onRefresh,     // The action to perform when the user triggers a refresh
+//            modifier = Modifier
+//        ) {
+//            LazyColumn(Modifier.fillMaxSize()) {
+//                items(22) { index ->
+//                    ListItem(headlineContent = { Text(text = "@@@") })
+//                }
+//            }
+//        }
 
         AndroidView(
-            modifier = Modifier.border(3.dp, Color.Red).fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
                 SwipeRefreshLayout(ctx).apply {
                     layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

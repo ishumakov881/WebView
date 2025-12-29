@@ -28,11 +28,11 @@ import org.imaginativeworld.oopsnointernet.utils.NoInternetUtils
 @Composable
 fun ErrorContent(modifier: Modifier = Modifier, isLoading: Boolean, onReload: () -> Unit) {
     val context = LocalContext.current
-    Surface(modifier = modifier.border(3.dp, Color.Red)) {//.fillMaxSize()
+    Surface(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier.padding(16.dp),
-            //contentAlignment = Alignment.Center
-            contentAlignment = Alignment.BottomCenter
+            contentAlignment = Alignment.Center
+            //contentAlignment = Alignment.BottomCenter
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

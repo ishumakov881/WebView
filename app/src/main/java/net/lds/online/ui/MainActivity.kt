@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
                     }
                     LkApp()
 
+                    println("@@@@ isNetworkAvailable @@@@ $isNetworkAvailable")
                     //Text(color = Color.Red, text = "@@@@ $isNetworkAvailable")
 
                 }
