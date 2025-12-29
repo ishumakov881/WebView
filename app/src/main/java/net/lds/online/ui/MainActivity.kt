@@ -28,11 +28,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         //WindowCompat.setDecorFitsSystemWindows(window, false)
-       if(BuildConfig.DEBUG){
-           window.addFlags( //WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or //WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-               WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-           )
-       }
+        if (BuildConfig.DEBUG) {
+            window.addFlags( //WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or //WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+        }
         setContent {
             AppTheme {
 
@@ -44,12 +44,17 @@ class MainActivity : ComponentActivity() {
                         NetworkStatus.Available -> {
                             openFullDialogCustom.value = false
                         }
-                        NetworkStatus.Losing,
+
+                        NetworkStatus.Losing -> {
+
+                        }
+
                         NetworkStatus.Lost,
                         NetworkStatus.Unavailable,
                         NetworkStatus.NoInternet -> {
                             openFullDialogCustom.value = true
                         }
+
                         NetworkStatus.Slow -> {}
                     }
                     LkApp()
@@ -84,9 +89,10 @@ class MainActivity : ComponentActivity() {
 //                }
                 //...............................................................................
                 //Full screen Custom Dialog Sample
-                if (openFullDialogCustom.value) { NoInternetScreen(onDismiss = {
-                    openFullDialogCustom.value = false
-                })
+                if (openFullDialogCustom.value) {
+                    NoInternetScreen(onDismiss = {
+                        openFullDialogCustom.value = false
+                    })
                 }
             }
 

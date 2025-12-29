@@ -174,7 +174,7 @@ fun WebViewScreenContent(
             modifier = Modifier.fillMaxSize()
         )
 
-        Text("@ $errorMessage")
+        //Text("@ $errorMessage")
     }
 }
 
@@ -343,7 +343,7 @@ fun WebViewScreen(url: String, onControlsChanged: (WebViewControls) -> Unit) {
 
         // Показываем сообщение об ошибке
         if (switchViews) {
-            ErrorContent(isLoading = isLoading, onReload = {
+            ErrorContent(modifier = Modifier.align(Alignment.BottomCenter), isLoading = isLoading, onReload = {
                 webView?.reload()
                 //Toast.makeText(context, "${webView?.url}", Toast.LENGTH_SHORT).show()
             })

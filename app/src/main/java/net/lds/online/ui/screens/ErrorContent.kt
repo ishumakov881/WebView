@@ -2,6 +2,7 @@ package net.lds.online.ui.screens
 
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,27 +26,28 @@ import androidx.compose.ui.unit.sp
 import org.imaginativeworld.oopsnointernet.utils.NoInternetUtils
 
 @Composable
-fun ErrorContent(isLoading: Boolean, onReload: () -> Unit) {
+fun ErrorContent(modifier: Modifier = Modifier, isLoading: Boolean, onReload: () -> Unit) {
     val context = LocalContext.current
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = modifier.border(3.dp, Color.Red)) {//.fillMaxSize()
         Box(
-            modifier = Modifier.Companion.fillMaxSize().padding(16.dp),
-            contentAlignment = Alignment.Companion.Center
+            modifier = Modifier.padding(16.dp),
+            //contentAlignment = Alignment.Center
+            contentAlignment = Alignment.BottomCenter
         ) {
             Column(
-                horizontalAlignment = Alignment.Companion.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     text = "Нет подключения к интернету",
                     style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Companion.Center
+                    textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = "Проверьте подключение и попробуйте снова",
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Companion.Center,
+                    textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
 

@@ -37,8 +37,8 @@ open class CustomWebViewClient(
     WebViewClient() {
     //RequestInspector
     private var blockedDomains0: MutableList<String> = mutableListOf<String>()
-    private val authEndpoints = listOf(
-        "/api/auth/login", "/login?redirect=/"
+    private val authEndpoints: List<String> = listOf(
+        //"/api/auth/login", "/login?redirect=/"
     )
 
     init {
@@ -109,8 +109,8 @@ open class CustomWebViewClient(
 
             is WebUiState.Error -> {
                 val errorUrl = (uiState as WebUiState.Error).error
-                println("<onPageFinished> $url @@ ${errorUrl}")
-                if (errorUrl.equals(url)) {
+                println("<onPageFinished> $url @@ ${errorUrl.failingUrl}")
+                if (errorUrl.failingUrl == url) {
                     uiState = WebUiState.Content
                     chromeView.removeErrorPage()
                 }
