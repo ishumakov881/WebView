@@ -79,9 +79,16 @@ open class CustomWebViewClient(
     //constructor(activity: ChromeView, a: Activity) : this(null, activity, a)
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-        if (firstUrl == null) {
+        if (uiState is WebUiState.Error) {
+            uiState = WebUiState.Content
+            chromeView.removeErrorPage()
+        }
+        if (firstUrl == null) {//На всякий случай храним самую первую ссылку
             firstUrl = url
         }
+
+        //currentEntry = url
+
         if (BuildConfig.DEBUG) {
             DebugTools.printParams("<onPageStarted>", url)
         }
@@ -101,21 +108,7 @@ open class CustomWebViewClient(
 //        }
         val activity = this.chromeView
 
-        //error is fixed
-        when (uiState) {
-            WebUiState.Content -> {
-                println("<onPageFinished> $url @@ ${(uiState)}")
-            }
 
-            is WebUiState.Error -> {
-                val errorUrl = (uiState as WebUiState.Error).error
-                println("<onPageFinished> $url @@ ${errorUrl.failingUrl}")
-                if (errorUrl.failingUrl == url) {
-                    uiState = WebUiState.Content
-                    chromeView.removeErrorPage()
-                }
-            }
-        }
         if (KEY_ERROR_ == url) {
             view.clearHistory()
         }
@@ -579,12 +572,12 @@ open class CustomWebViewClient(
     private fun handleErrorCode(webView: WebView, failure: ReceivedError) {
         if (HANDLE_ERROR_CODE) {
             val theErrorisalreadyshown = uiState is WebUiState.Error
-            val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
+            //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
             val errorCode = failure.errorCode
-            println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
+            //@@@@println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
             //ERR_PROXY_CONNECTION_FAILED, we use Charles
             if (theErrorisalreadyshown) return
-            if (!errorOnTheSamePage) return
+            //@@@@if (!errorOnTheSamePage) return
 
             when (errorCode) {
                 (ERROR_PROXY_AUTHENTICATION) -> {
@@ -629,16 +622,16 @@ open class CustomWebViewClient(
     }
 
 
-    private fun isErrorOnMainPage(failingUrl: String): Boolean {
-        println("{isErrorOnMainPage} $firstUrl $failingUrl")
-        val homeUrl = firstUrl ?: return false
-        return homeUrl == failingUrl || authEndpoints.any {
-            failingUrl.endsWith(
-                it,
-                ignoreCase = true
-            )
-        }
-    }
+//    private fun isErrorOnMainPage(failingUrl: String): Boolean {
+//        println("{isErrorOnMainPage} $firstUrl $failingUrl")
+//        val homeUrl = firstUrl ?: return false
+//        return homeUrl == failingUrl || authEndpoints.any {
+//            failingUrl.endsWith(
+//                it,
+//                ignoreCase = true
+//            )
+//        }
+//    }
 
 
     /**
@@ -664,12 +657,7 @@ open class CustomWebViewClient(
 
         val failingUrl = request.url.toString()
         val mainUrl = view.url ?: ""
-        val errorOnTheSamePage = mainUrl == failingUrl || authEndpoints.any {
-            failingUrl.endsWith(
-                it,
-                ignoreCase = true
-            )
-        }
+        val errorOnTheSamePage = mainUrl == failingUrl || authEndpoints.any { failingUrl.endsWith(it, ignoreCase = true) }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             println(TAG + "!! @@@ >= 23" + error.errorCode + "\t" + error.description)
@@ -729,7 +717,12 @@ open class CustomWebViewClient(
             cUrl = request.url.toString()
         }
         //println(TAG + "Status code: " + statusCode + " " + Build.VERSION.SDK_INT + " " + view.getUrl() + " " + cUrl);
-        println(TAG + "[onReceivedHttpError::$statusCode] $cUrl")
+        println("$TAG --> [onReceivedHttpError::$statusCode] $cUrl")
+        val failingUrl = request.url.toString()
+        val mainUrl = view.url ?: ""
+        val errorOnTheSamePage = mainUrl == failingUrl || authEndpoints.any { failingUrl.endsWith(it, ignoreCase = true) }
+
+
 
         //        if (statusCode == 404) {
 //            //if (!mainUrl.equals(view.getUrl())) {

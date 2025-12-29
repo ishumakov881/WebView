@@ -1,7 +1,10 @@
 package net.lds.online.navigation
 
 sealed class Screen(val route: String, val url: String) {
-    object Home : Screen("home", "https://lk0.lds.online")
+    //object Home : Screen("home", "https://lk0.lds.online")
+    //object Home : Screen("home", "10.0.20.167")
+    object Home : Screen("home", "https://lk0.lds.online")//
+
 //    object AddItem : Screen("add_item", "/item/add")
 //    object Messages : Screen("messages", "/cabinet/messages")
 //    object Profile : Screen("profile", "/cabinet/items")

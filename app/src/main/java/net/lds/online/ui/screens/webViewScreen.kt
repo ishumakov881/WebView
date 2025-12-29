@@ -31,12 +31,21 @@ import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import com.walhalla.nointernet.Text
+import com.walhalla.webview.BuildConfig
 import com.walhalla.webview.ChromeView
 import com.walhalla.webview.ReceivedError
 import com.walhalla.webview.utility.ActivityUtils
@@ -68,21 +77,24 @@ fun WebViewScreenContent(
     val activity = context as Activity
     var errorMessage by remember { mutableStateOf("") }
 
-    Box {
+    Box(modifier = Modifier.fillMaxSize()/*.windowInsetsPadding(WindowInsets.systemBars).border(3.dp, Color.Red)*/) {
 
-//        PullToRefreshBox(
-//            isRefreshing = isRefreshing, // Indicates if the loading indicator should be shown
-//            onRefresh = onRefresh,     // The action to perform when the user triggers a refresh
-//            modifier = modifier
-//        ) {
-//            LazyColumn(Modifier.fillMaxSize()) {
-//                items(items.size) { index ->
-//                    ListItem(headlineContent = { Text(text = items[index]) })
-//                }
-//            }
-//        }
+        val isRefreshing = true
+        val onRefresh: () -> Unit = {}
+        PullToRefreshBox(
+            isRefreshing = isRefreshing, // Indicates if the loading indicator should be shown
+            onRefresh = onRefresh,     // The action to perform when the user triggers a refresh
+            modifier = Modifier
+        ) {
+            LazyColumn(Modifier.fillMaxSize()) {
+                items(22) { index ->
+                    ListItem(headlineContent = { Text(text = "@@@") })
+                }
+            }
+        }
 
         AndroidView(
+            modifier = Modifier.border(3.dp, Color.Red).fillMaxSize(),
             factory = { ctx ->
                 SwipeRefreshLayout(ctx).apply {
                     layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -142,6 +154,11 @@ fun WebViewScreenContent(
                         }
 
                     }
+
+                    if(BuildConfig.DEBUG){
+                        WebViewCache.clear()
+                    }
+
                     val cachedWebView = WebViewCache.get(
                         url, activity,
                         //, client
@@ -170,8 +187,7 @@ fun WebViewScreenContent(
                 val webView = swipeRefresh.getChildAt(0) as? WebView
                 webView?.loadUrl(url)
                 //}
-            },
-            modifier = Modifier.fillMaxSize()
+            }
         )
 
         //Text("@ $errorMessage")

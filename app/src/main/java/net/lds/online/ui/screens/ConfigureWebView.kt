@@ -16,6 +16,7 @@ fun configureWebView(webView: WebView) {
 
         // Загрузка и кэширование
         loadsImagesAutomatically = true
+        cacheMode = WebSettings.LOAD_NO_CACHE
 
         // JavaScript и DOM
         javaScriptEnabled = true

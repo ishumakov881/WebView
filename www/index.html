@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebView Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        h1, h2 { color: #0056b3; }
+        .section { background-color: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+        .button:hover { background-color: #0056b3; }
+        input[type="text"], input[type="file"] {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: calc(100% - 16px);
+            box-sizing: border-box;
+        }
+        form button { background-color: #28a745; }
+        form button:hover { background-color: #218838; }
+        #kotlinData { background-color: #e9ecef; padding: 10px; border-radius: 4px; margin-top: 10px; word-wrap: break-word; }
+        .error-link { color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <h1>WebView Test Page</h1>
+    <p>This page is designed to test various WebView functionalities.</p>
+
+    <!-- 1. Навигация -->
+    <div class="section">
+        <h2>1. Навигация</h2>
+        <p>Переход по внутренним ссылкам:</p>
+        <a href="page2.html" class="button">Перейти на Page 2</a>
+        <a href="https://www.google.com" class="button">Перейти на Google (внешняя)</a>
+    </div>
+
+    <!-- 2. Битые ссылки -->
+    <div class="section">
+        <h2>2. Пример с битой ссылкой</h2>
+        <p>Клик по этой ссылке должен вызвать ошибку загрузки, и WebView должен показать страницу ошибки.</p>
+        <a href="broken-link.html" class="button error-link">Битая ссылка</a>
+    </div>
+
+    <!-- 3. Форма ввода и выбора файла -->
+    <div class="section">
+        <h2>3. Форма ввода и выбора файла</h2>
+        <form id="testForm">
+            <label for="textInput">Текстовое поле:</label>
+            <input type="text" id="textInput" name="textInput" placeholder="Введите что-нибудь"><br>
+            <label for="fileInput">Выбор файла:</label>
+            <input type="file" id="fileInput" name="fileInput" accept="image/*"><br>
+            <button type="submit" class="button">Отправить форму (не будет отправлена)</button>
+        </form>
+        <p><i>Примечание: Отправка формы здесь не настроена, это для демонстрации элементов.</i></p>
+    </div>
+
+    <!-- 4. Пример проброса из JS в нативный код -->
+    <div class="section">
+        <h2>4. JS в нативный код</h2>
+        <p>Нажмите кнопку, чтобы вызвать нативную функцию Kotlin из JavaScript.</p>
+        <button class="button" onclick="callKotlin()">Вызвать Kotlin Toast</button>
+        <script>
+            function callKotlin() {
+                if (window.Android && typeof window.Android.showToast === 'function') {
+                    window.Android.showToast("Привет из JavaScript!");
+                } else {
+                    alert("Объект Android не найден или метод showToast недоступен.");
+                }
+            }
+        </script>
+    </div>
+
+    <!-- 5. Печать объекта из Kotlin -->
+    <div class="section">
+        <h2>5. Печать объекта из Kotlin</h2>
+        <p>Здесь будет отображен объект, переданный из Kotlin.</p>
+        <div id="kotlinData">Ожидание данных из Kotlin...</div>
+        <script>
+            // Эта функция будет вызвана из Kotlin
+            function showDataFromKotlin(data) {
+                document.getElementById('kotlinData').innerText = "Получено из Kotlin: " + data;
+            }
+            // Пример вызова для теста (удалить в продакшене)
+            // showDataFromKotlin("Пример данных после загрузки страницы");
+        </script>
+    </div>
+
+</body>
+</html>
