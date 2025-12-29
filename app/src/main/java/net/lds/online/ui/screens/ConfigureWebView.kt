@@ -29,7 +29,7 @@ fun configureWebView(webView: WebView) {
         setGeolocationEnabled(true)
 
         // Множественные окна
-        setSupportMultipleWindows(true)
+        setSupportMultipleWindows(false) /* true */
 
         // Доступ к файлам
         pluginState = WebSettings.PluginState.ON
