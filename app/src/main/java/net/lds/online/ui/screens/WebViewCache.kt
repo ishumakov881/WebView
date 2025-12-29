@@ -3,6 +3,7 @@ package net.lds.online.ui.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Handler
@@ -204,7 +205,18 @@ object WebViewCache {
                 val newWebView = WebView(view.context)
                 newWebView.settings.javaScriptEnabled = true
 
-                val builder = AlertDialog.Builder(view.context)
+                WebViewDialog(view.context, newWebView)
+
+                val transport = resultMsg.obj as WebView.WebViewTransport
+                transport.webView = newWebView
+                resultMsg.sendToTarget()
+
+                return true
+            }
+
+            private fun WebViewDialog(context: Context, newWebView: WebView) {
+
+                val builder = AlertDialog.Builder(context)
                 builder.setView(newWebView)
                 builder.setPositiveButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
 
@@ -212,12 +224,6 @@ object WebViewCache {
                 newWebView.webChromeClient = this
                 newWebView.webViewClient = object : WebViewClient() {}
                 dialog.show()
-
-                val transport = resultMsg.obj as WebView.WebViewTransport
-                transport.webView = newWebView
-                resultMsg.sendToTarget()
-
-                return true
             }
         }
         return chromeClient
