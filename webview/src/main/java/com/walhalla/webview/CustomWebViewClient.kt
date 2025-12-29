@@ -56,7 +56,7 @@ open class CustomWebViewClient(
     private val linksOpenedInExternalBrowser: Array<String> =
         context.resources.getStringArray(R.array.links_opened_in_external_browser)
 
-    private var _homeUrl_: String? = null
+    private var firstUrl: String? = null
 
 
     //
@@ -72,15 +72,15 @@ open class CustomWebViewClient(
 //    }
 
     fun setHomeUrl(homeUrl: String?) {
-        this._homeUrl_ = homeUrl
+        this.firstUrl = homeUrl
     }
 
 
     //constructor(activity: ChromeView, a: Activity) : this(null, activity, a)
 
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-        if (_homeUrl_ == null) {
-            _homeUrl_ = url
+        if (firstUrl == null) {
+            firstUrl = url
         }
         if (BuildConfig.DEBUG) {
             DebugTools.printParams("<onPageStarted>", url)
@@ -630,8 +630,8 @@ open class CustomWebViewClient(
 
 
     private fun isErrorOnMainPage(failingUrl: String): Boolean {
-        println("{isErrorOnMainPage} $_homeUrl_ $failingUrl")
-        val homeUrl = _homeUrl_ ?: return false
+        println("{isErrorOnMainPage} $firstUrl $failingUrl")
+        val homeUrl = firstUrl ?: return false
         return homeUrl == failingUrl || authEndpoints.any {
             failingUrl.endsWith(
                 it,
