@@ -45,7 +45,6 @@ private fun isSameDomain(url: String, baseDomain: String?): Boolean {
 }
 
 fun CustomWebViewClient.handleErrorCode(webView: WebView, failure: ReceivedError) {
-
     val theErrorisalreadyshown = uiState is WebUiState.Error
     //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
     val errorCode = failure.errorCode
@@ -94,6 +93,7 @@ fun CustomWebViewClient.handleErrorCode(webView: WebView, failure: ReceivedError
 
     }
 }
+
 fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: String): Boolean {
     val var0 = isDownloadableFile(downloadFileTypes, url)
     if (var0) {
