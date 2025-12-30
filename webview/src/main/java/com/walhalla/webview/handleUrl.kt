@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.net.MailTo
 import androidx.core.net.ParseException
 import androidx.core.net.toUri
+import com.walhalla.webview.CustomWebViewClient.Companion.TAG
 import com.walhalla.webview.utility.ActivityUtils
 import com.walhalla.webview.utility.DownloadUtility
 
@@ -25,12 +26,12 @@ private fun isSameDomain(url: String, baseDomain: String?): Boolean {
 
     println("isSameDomain: $domain $baseDomain $result")
 
-
     //o.php?
     return result
 }
 
 fun handleUrl(customWebViewClient: CustomWebViewClient, view: WebView, url: String): Boolean {
+
     val var0 = customWebViewClient.isDownloadableFile(url)
     val context = view.context
     if (var0) {

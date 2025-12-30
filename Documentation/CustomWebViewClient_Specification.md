@@ -40,4 +40,69 @@
 6.  *(Для API < 23)* Вызывается `onPageFinished`. Он проверяет, что `pageHasError` равен `false`, и только после этого скрывает экран ошибки.
 
 ---
-Это ТЗ точно описывает желаемое поведение.
+@@@@
+class CustomWebViewClient(
+private val chromeView: ChromeView
+) : WebViewClient() {
+
+    private var pageHasError = false
+
+    // -----------------------------
+    // Navigation start
+    // -----------------------------
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        pageHasError = false
+        chromeView.onPageStarted()
+        // ❗️ Ошибку НЕ скрываем
+    }
+
+    // -----------------------------
+    // Errors
+    // -----------------------------
+    override fun onReceivedError(
+        view: WebView,
+        request: WebResourceRequest,
+        error: WebResourceError
+    ) {
+        if (!request.isForMainFrame) return
+
+        pageHasError = true
+        chromeView.setErrorPage(
+            code = error.errorCode,
+            description = error.description?.toString()
+        )
+    }
+
+    override fun onReceivedHttpError(
+        view: WebView,
+        request: WebResourceRequest,
+        errorResponse: WebResourceResponse
+    ) {
+        if (!request.isForMainFrame) return
+
+        pageHasError = true
+        chromeView.setErrorPage(
+            code = errorResponse.statusCode,
+            description = errorResponse.reasonPhrase
+        )
+    }
+
+    // -----------------------------
+    // Success (API 23+)
+    // -----------------------------
+    override fun onPageCommitVisible(view: WebView?, url: String?) {
+        if (!pageHasError) {
+            chromeView.removeErrorPage()
+        }
+    }
+
+    // -----------------------------
+    // Fallback (API < 23)
+    // -----------------------------
+    override fun onPageFinished(view: WebView?, url: String?) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && !pageHasError) {
+            chromeView.removeErrorPage()
+        }
+        chromeView.onPageFinished()
+    }
+}

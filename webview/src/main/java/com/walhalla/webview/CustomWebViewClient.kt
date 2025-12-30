@@ -256,18 +256,16 @@ open class CustomWebViewClient(
     //            e.printStackTrace();
     //        }
     //    }
+
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        var url: String? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            url = request.url.toString()
-            println(TAG + "//1. $url")
-        }
-        return handleUrl(this, view, url!!)
+        val url = request.url.toString()
+        println("$TAG @@@ handleUrl: $url ${request.isForMainFrame}")
+        return handleUrl(this, view, url)
     }
 
     @Deprecated("")
-    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        println("$TAG@@@. $url")
+    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean  {
+        println("$TAG @@@ handleUrl: $url")
         return handleUrl(this, view, url)
     }
 
