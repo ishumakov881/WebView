@@ -27,10 +27,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "WebView"
 include(":app")
-include(":wvcore")
-include(":wvrss")
+include(":libs:wvcore")
+include(":libs:wvrss")
 
-
-include(":features:webview")
-project(":features:webview").projectDir = File("webview")
+include(":libs:webview")
 include(":libs:no-internet")

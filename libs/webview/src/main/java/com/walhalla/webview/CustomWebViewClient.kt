@@ -43,11 +43,8 @@ open class CustomWebViewClient(
 
     private var uiState: WebUiState = WebUiState.Content
 
-
-    private val downloadFileTypes: Array<String> =
-        context.resources.getStringArray(R.array.download_file_types)
-    private val linksOpenedInExternalBrowser: Array<String> =
-        context.resources.getStringArray(R.array.links_opened_in_external_browser)
+    private val downloadFileTypes: Array<String> = context.resources.getStringArray(R.array.download_file_types)
+    private val linksOpenedInExternalBrowser: Array<String> = context.resources.getStringArray(R.array.links_opened_in_external_browser)
 
     private var firstUrl: String? = null
 

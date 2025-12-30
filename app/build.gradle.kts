@@ -116,14 +116,14 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(project(":wvcore"))
-    implementation(project(":wvrss"))
+    implementation(project(":libs:wvcore"))
+    implementation(project(":libs:wvrss"))
     implementation(project(":libs:no-internet"))
 
     // SwipeRefreshLayout
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.firebase.crashlytics)
-    implementation(project(":features:webview"))
+    implementation(project(":libs:webview"))
     implementation(libs.transport.api)
     implementation(libs.material3)
 
