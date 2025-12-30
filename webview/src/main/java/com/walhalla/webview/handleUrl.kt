@@ -3,99 +3,36 @@ package com.walhalla.webview
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.webkit.WebView
-import android.webkit.WebViewClient.ERROR_CONNECT
-import android.webkit.WebViewClient.ERROR_HOST_LOOKUP
-import android.webkit.WebViewClient.ERROR_PROXY_AUTHENTICATION
-import android.webkit.WebViewClient.ERROR_TIMEOUT
 import android.widget.Toast
 import androidx.core.net.MailTo
 import androidx.core.net.ParseException
 import androidx.core.net.toUri
-import com.walhalla.webview.CustomWebViewClient.Companion.TAG
-import com.walhalla.webview.CustomWebViewClient.Companion.isConnected
-import com.walhalla.webview.CustomWebViewClient.Companion.offlineMessageHtml
 import com.walhalla.webview.utility.ActivityUtils
 import com.walhalla.webview.utility.DownloadUtility
-import java.util.Locale
 
-fun isDownloadableFile(downloadFileTypes: Array<String>, url: String): Boolean {
-    var url = url
-    val index = url.indexOf("?")
-    if (index > -1) {
-        url = url.substring(0, index)
-    }
-    url = url.lowercase(Locale.getDefault())
-    for (type in downloadFileTypes) {
-        if (url.endsWith(type)) return true
-    }
-    return false
-}
+
 private fun isSameDomain(url: String, baseDomain: String?): Boolean {
     val uri = url.toUri()
     val domain = uri.host
+
     val result =
         if (domain != null && (domain.endsWith(".$baseDomain") || domain == baseDomain)) {
             true
         } else {
             false
         }
+
+
     println("isSameDomain: $domain $baseDomain $result")
+
+
     //o.php?
     return result
 }
 
-fun handleErrorCode(webView: WebView, failure: ReceivedError) {
-    val theErrorisalreadyshown = uiState is WebUiState.Error
-    //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
-    val errorCode = failure.errorCode
-    //@@@@println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
-    //ERR_PROXY_CONNECTION_FAILED, we use Charles
-    if (theErrorisalreadyshown) return
-    //@@@@if (!errorOnTheSamePage) return
-
-    when (errorCode) {
-        (ERROR_PROXY_AUTHENTICATION) -> {
-            setErrorPage(failure)
-        }
-
-        (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
-            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-            setErrorPage(failure)
-            //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
-            webClientError(failure)
-        }
-
-        (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT @@ -8 aka ERR_CONNECTION_RESET
-            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-            setErrorPage(failure)
-            webClientError(failure)
-        }
-
-
-        (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
-            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-            setErrorPage(failure)
-            webClientError(failure)
-        }
-
-        (-14) -> { // -14 is error for file not found, like 404.
-            //Skip
-        }
-
-        else -> {
-            setErrorPage(failure)
-            webClientError(failure)
-        }
-        //ERR_CONNECTION_REFUSED
-
-    }
-}
-
-fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: String): Boolean {
-    val var0 = isDownloadableFile(downloadFileTypes, url)
+fun handleUrl(customWebViewClient: CustomWebViewClient, view: WebView, url: String): Boolean {
+    val var0 = customWebViewClient.isDownloadableFile(url)
+    val context = view.context
     if (var0) {
         Toast.makeText(context, R.string.fragment_main_downloading, Toast.LENGTH_LONG).show()
         DownloadUtility.downloadFile(context, url, DownloadUtility.getFileName(url))
@@ -147,32 +84,32 @@ fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: Strin
         // determine for opening the link externally or internally
 
 
-        var openInExternalApp = isLinkExternal(url) //openInExternalApp app
+        var openInExternalApp = customWebViewClient.isLinkExternal(url) //openInExternalApp app
         val internal = DownloadUtility.isLinkInternal(url) //internal webView
         if (!openInExternalApp && !internal) {
             openInExternalApp = WebViewAppConfig.OPEN_LINKS_IN_EXTERNAL_BROWSER
         }
         //My new Code
         if (url.endsWith(".apk")) {
-            chromeView?.openBrowser(url)
+            ActivityUtils.openBrowser(context, url)
             return true
         }
 
         // open the link
         if (openInExternalApp) {
-            println(TAG + "@@@")
-            chromeView?.openBrowser(url)
+            println(CustomWebViewClient.TAG + "@@@")
+            ActivityUtils.openBrowser(context, url)
             return true
         } else {
-            if (isCheckSameDomainEnabled) {
-                if (isSameDomain(url, baseDomain)) {
+            if (customWebViewClient.isCheckSameDomainEnabled) {
+                if (isSameDomain(url, customWebViewClient.homeDomain9)) {
                     println(
-                        TAG + "NOT_OVERRIDE:isSameDomain: $baseDomain :: $url"
+                        CustomWebViewClient.TAG + "NOT_OVERRIDE:isSameDomain: ${customWebViewClient.homeDomain9} :: $url"
                     )
                     return false
                 } else {
                     println(
-                        TAG + "blocked: $url, $baseDomain"
+                        CustomWebViewClient.TAG + "blocked: $url, ${customWebViewClient.homeDomain9}"
                     )
 
                     //var 1
@@ -188,7 +125,7 @@ fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: Strin
                 }
             } else {
                 //@@@ showActionBarProgress(true);
-                println(TAG + "NOT_OVERRIDE: ... $url")
+                println(CustomWebViewClient.TAG + "NOT_OVERRIDE: ... $url")
                 return false
             }
         }
@@ -245,9 +182,9 @@ fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: Strin
         val uri = url.toUri()
         val msg = uri.getQueryParameter("text")
         val sendIntent = Intent()
-        sendIntent.setAction(Intent.ACTION_SEND)
+        sendIntent.action = Intent.ACTION_SEND
         sendIntent.putExtra(Intent.EXTRA_TEXT, msg)
-        sendIntent.setType("text/plain")
+        sendIntent.type = "text/plain"
         sendIntent.setPackage("com.whatsapp")
         try {
             context.startActivity(sendIntent)
@@ -298,12 +235,12 @@ fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: Strin
 //bnk            }
         return false
     } else {
-        if (isConnected) {
+        if (CustomWebViewClient.isConnected) {
             // return false to let the WebView handle the URL
             return false
         } else {
             // show the proper "not connected" message
-            view.loadData(offlineMessageHtml, "text/html", "utf-8")
+            view.loadData(CustomWebViewClient.offlineMessageHtml, "text/html", "utf-8")
             // return true if the host application wants to leave the current
             // WebView and handle the url itself
             return true

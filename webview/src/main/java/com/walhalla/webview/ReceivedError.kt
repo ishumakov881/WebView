@@ -5,7 +5,7 @@ package com.walhalla.webview
 public class ReceivedError
 //        public void setErrorPageShown() {
     (
-    var errorCode: Int,
+    var code: Int,
     var description: String,
     var failingUrl: String
 )
