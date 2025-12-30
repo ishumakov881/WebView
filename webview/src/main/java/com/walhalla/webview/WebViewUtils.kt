@@ -44,7 +44,7 @@ private fun isSameDomain(url: String, baseDomain: String?): Boolean {
     return result
 }
 
-fun CustomWebViewClient.handleErrorCode(webView: WebView, failure: ReceivedError) {
+fun handleErrorCode(webView: WebView, failure: ReceivedError) {
     val theErrorisalreadyshown = uiState is WebUiState.Error
     //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
     val errorCode = failure.errorCode
