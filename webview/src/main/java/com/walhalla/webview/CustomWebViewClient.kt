@@ -47,7 +47,7 @@ open class CustomWebViewClient(
         }
     }
 
-    private var uiState: WebUiState = WebUiState.Content
+    var uiState: WebUiState = WebUiState.Content
 
 
     val downloadFileTypes: Array<String> = context.resources.getStringArray(R.array.download_file_types)
@@ -308,62 +308,12 @@ open class CustomWebViewClient(
                 }
 
                 val failure = ReceivedError(errorCode, description, failingUrl)
-                handleErrorCode(webView, failure)
+                if(HANDLE_ERROR_CODE)handleErrorCode(webView, failure)
             }
         }
     }
 
-    private fun handleErrorCode(webView: WebView, failure: ReceivedError) {
-        if (HANDLE_ERROR_CODE) {
-            val theErrorisalreadyshown = uiState is WebUiState.Error
-            //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
-            val errorCode = failure.errorCode
-            //@@@@println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
-            //ERR_PROXY_CONNECTION_FAILED, we use Charles
-            if (theErrorisalreadyshown) return
-            //@@@@if (!errorOnTheSamePage) return
 
-            when (errorCode) {
-                (ERROR_PROXY_AUTHENTICATION) -> {
-                    setErrorPage(failure)
-                }
-
-                (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
-                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                    setErrorPage(failure)
-                    //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
-                    webClientError(failure)
-                }
-
-                (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT @@ -8 aka ERR_CONNECTION_RESET
-                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                    setErrorPage(failure)
-                    webClientError(failure)
-                }
-
-
-                (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
-                    //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
-                    //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
-                    setErrorPage(failure)
-                    webClientError(failure)
-                }
-
-                (-14) -> { // -14 is error for file not found, like 404.
-                    //Skip
-                }
-
-                else -> {
-                    setErrorPage(failure)
-                    webClientError(failure)
-                }
-                //ERR_CONNECTION_REFUSED
-
-            }
-        }
-    }
 
 
 //    private fun isErrorOnMainPage(failingUrl: String): Boolean {
@@ -414,7 +364,7 @@ open class CustomWebViewClient(
                     error.description.toString(),
                     failingUrl
                 )
-                handleErrorCode(view, err0)
+                if(HANDLE_ERROR_CODE)handleErrorCode(view, err0)
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (errorOnTheSamePage) {
@@ -428,11 +378,11 @@ open class CustomWebViewClient(
         }
     }
 
-    private fun webClientError(failure: ReceivedError) {
+    fun webClientError(failure: ReceivedError) {
         chromeView.webClientError(failure)
     }
 
-    private fun setErrorPage(newValue: ReceivedError) {
+    fun setErrorPage(newValue: ReceivedError) {
         println("WWWW $TAG $uiState :: $newValue")
         //isErrorPageShown0 = true;
         uiState = WebUiState.Error(newValue)

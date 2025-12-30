@@ -3,6 +3,10 @@ package com.walhalla.webview
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.webkit.WebView
+import android.webkit.WebViewClient.ERROR_CONNECT
+import android.webkit.WebViewClient.ERROR_HOST_LOOKUP
+import android.webkit.WebViewClient.ERROR_PROXY_AUTHENTICATION
+import android.webkit.WebViewClient.ERROR_TIMEOUT
 import android.widget.Toast
 import androidx.core.net.MailTo
 import androidx.core.net.ParseException
@@ -40,6 +44,56 @@ private fun isSameDomain(url: String, baseDomain: String?): Boolean {
     return result
 }
 
+fun CustomWebViewClient.handleErrorCode(webView: WebView, failure: ReceivedError) {
+
+    val theErrorisalreadyshown = uiState is WebUiState.Error
+    //@@@@val errorOnTheSamePage = isErrorOnMainPage(failure.failingUrl)
+    val errorCode = failure.errorCode
+    //@@@@println("errorOnTheSamePage $errorOnTheSamePage, ERROR_CODE: $errorCode $theErrorisalreadyshown")
+    //ERR_PROXY_CONNECTION_FAILED, we use Charles
+    if (theErrorisalreadyshown) return
+    //@@@@if (!errorOnTheSamePage) return
+
+    when (errorCode) {
+        (ERROR_PROXY_AUTHENTICATION) -> {
+            setErrorPage(failure)
+        }
+
+        (ERROR_HOST_LOOKUP /*ERR_INTERNET_DISCONNECTED*/) -> { //-2 ERR_NAME_NOT_RESOLVED
+            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+            setErrorPage(failure)
+            //Toast.makeText(context, "@@@", Toast.LENGTH_SHORT).show();
+            webClientError(failure)
+        }
+
+        (ERROR_TIMEOUT) -> { //-8 ERR_CONNECTION_TIMED_OUT @@ -8 aka ERR_CONNECTION_RESET
+            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+            setErrorPage(failure)
+            webClientError(failure)
+        }
+
+
+        (ERROR_CONNECT) -> { // -6	net::ERR_CONNECTION_REFUSED
+            //webView.loadData(timeoutMessageHtml, "text/html", "utf-8");
+            //@@@ webView.loadDataWithBaseURL(KEY_ERROR_, timeoutMessageHtml, "text/html", "UTF-8", null);
+            setErrorPage(failure)
+            webClientError(failure)
+        }
+
+        (-14) -> { // -14 is error for file not found, like 404.
+            //Skip
+        }
+
+        else -> {
+            setErrorPage(failure)
+            webClientError(failure)
+        }
+        //ERR_CONNECTION_REFUSED
+
+    }
+}
 fun CustomWebViewClient.handleUrl(baseDomain: String?, view: WebView, url: String): Boolean {
     val var0 = isDownloadableFile(downloadFileTypes, url)
     if (var0) {

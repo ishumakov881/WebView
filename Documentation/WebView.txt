@@ -1,0 +1,1 @@
+CustomWebViewClient ядро логики, WebViewScreen определяет отобразить контент или скрин ошибки
