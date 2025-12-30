@@ -9,20 +9,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
 import com.lds.webview.BuildConfig
 import com.walhalla.nointernet.NoInternetScreen
+import kotlinx.coroutines.FlowPreview
 
-import my.connectivity.kmp.data.model.NetworkStatus
-import my.connectivity.kmp.rememberNetworkStatus
 import net.lds.online.ui.theme.AppTheme
 
 
 class MainActivity : ComponentActivity() {
 
+    @OptIn(FlowPreview::class)
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,30 +38,30 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
 
-                val openFullDialogCustom = remember { mutableStateOf(false) }
-                val isNetworkAvailable by rememberNetworkStatus()
+//                val openFullDialogCustom = remember { mutableStateOf(false) }
+//                val isNetworkAvailable by rememberNetworkStatus()
+//
+//                LaunchedEffect(Unit) {
+//                    snapshotFlow { isNetworkAvailable }
+//                        .debounce(500)
+//                        .distinctUntilChanged()
+//                        .collect { status ->
+//                            when (status) {
+//                                NetworkStatus.Lost, NetworkStatus.Unavailable, NetworkStatus.NoInternet -> {
+//                                    openFullDialogCustom.value = true
+//                                }
+//                                NetworkStatus.Available -> {
+//                                    openFullDialogCustom.value = false
+//                                }
+//                                else -> { /* Do nothing */ }
+//                            }
+//                        }
+//                }
 
                 Box {
-                    when (isNetworkAvailable) {
-                        NetworkStatus.Available -> {
-                            openFullDialogCustom.value = false
-                        }
-
-                        NetworkStatus.Losing -> {
-
-                        }
-
-                        NetworkStatus.Lost,
-                        NetworkStatus.Unavailable,
-                        NetworkStatus.NoInternet -> {
-                            openFullDialogCustom.value = true
-                        }
-
-                        NetworkStatus.Slow -> {}
-                    }
                     LkApp()
 
-                    println("@@@@ isNetworkAvailable @@@@ $isNetworkAvailable")
+                    //println("@@@@ isNetworkAvailable @@@@ $isNetworkAvailable")
                     //Text(color = Color.Red, text = "@@@@ $isNetworkAvailable")
 
                 }
@@ -90,13 +92,13 @@ class MainActivity : ComponentActivity() {
 //                }
                 //...............................................................................
                 //Full screen Custom Dialog Sample
-                if (openFullDialogCustom.value) {
-                    NoInternetScreen(onDismiss = {
-                        openFullDialogCustom.value = false
-                    })
-                }
+//                if (openFullDialogCustom.value) {
+//                    NoInternetScreen(onDismiss = {
+//                        openFullDialogCustom.value = false
+//                    })
+//                }
             }
 
         }
     }
-} 
+}

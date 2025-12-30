@@ -7,7 +7,7 @@ activity-compose = "1.9.3"
 agp = "8.8.2"
 android-compileSdk = "36"
 android-minSdk = "21"
-android-targetSdk = "35"
+android-targetSdk = "36"
 coilCompose = "3.1.0"
 coilNetworkKtor3 = "3.1.0"
 compose-bom = "2024.04.01"
@@ -38,7 +38,18 @@ transportApi = "4.0.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 material3 = "1.4.0"
+
+connectivity = "2.2.1"
+
 [libraries]
+connectivity-core = { module = "dev.jordond.connectivity:connectivity-core", version.ref = "connectivity" }
+connectivity-device = { module = "dev.jordond.connectivity:connectivity-device", version.ref = "connectivity" }
+connectivity-android = { module = "dev.jordond.connectivity:connectivity-android", version.ref = "connectivity" }
+connectivity-apple = { module = "dev.jordond.connectivity:connectivity-apple", version.ref = "connectivity" }
+connectivity-http = { module = "dev.jordond.connectivity:connectivity-http", version.ref = "connectivity" }
+connectivity-compose = { module = "dev.jordond.connectivity:connectivity-compose", version.ref = "connectivity" }
+connectivity-compose-device = { module = "dev.jordond.connectivity:connectivity-compose-device", version.ref = "connectivity" }
+connectivity-compose-http = { module = "dev.jordond.connectivity:connectivity-compose-http", version.ref = "connectivity" }
 
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanistWebview" }

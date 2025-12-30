@@ -41,7 +41,7 @@ android {
         //applicationId = "net.lds.online.webview"
         applicationId = "net.lds.online.beta"
 
-        minSdk = 21
+        minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         versionCode = _versionCode
@@ -150,5 +150,5 @@ dependencies {
     implementation(libs.onesignal)
     implementation(libs.accompanist.webview)
     implementation(libs.google.firebase.crashlytics)
-    implementation(libs.connectivity.kmp)
+    //implementation(libs.connectivity.kmp)
 } 
